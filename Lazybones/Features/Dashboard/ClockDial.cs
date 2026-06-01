@@ -14,7 +14,7 @@ namespace Lazybones.Features.Dashboard;
 // Material-style clock-face time picker. Hour on the outer ring (0–23),
 // minute on the inner ring (0–59), both visible at once and independently
 // draggable; the ring you press locks the drag for the gesture's lifetime.
-// The HH:MM at the centre is an embedded TextBox so the user can type a
+// The HH:MM at the center is an embedded TextBox so the user can type a
 // value directly; invalid input snaps to the nearest valid (clamped) or to
 // 00:00 if completely unparseable.
 public class ClockDial : Control

@@ -169,7 +169,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         // Close out any pause that was open at last shutdown (graceful or not):
         // an explicitly-recorded AppShutdown pause from Dispose, an in-flight
         // ScreenLock the user was in when we exited, or a fallback pause
-        // synthesised from the AppLastAliveAt heartbeat when no in-progress
+        // synthesized from the AppLastAliveAt heartbeat when no in-progress
         // pause was on record (covers crashes / kill / Environment.Exit).
         if (_state.CurrentPauseStartedAt.HasValue)
         {
@@ -860,7 +860,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         ApplyDayRolloverIfDue();
 
         // Heartbeat: persist state at most every 5 s. On a crash/kill/forced
-        // exit the recovery logic uses AppLastAliveAt to synthesise a pause
+        // exit the recovery logic uses AppLastAliveAt to synthesize a pause
         // from "last alive" to next launch, so the worst we ever lose is one
         // throttle window.
         var now = DateTime.Now;

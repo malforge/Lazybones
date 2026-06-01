@@ -31,8 +31,8 @@ public static class AchievementCatalog
         new Achievement(FirstStandId, "First Stand", "You completed your first standing cycle. Welcome!"),
         new Achievement(QuickDrawId, "Quick Draw", "Responded to a prompt within ten seconds."),
         new Achievement(IronLegsId, "Iron Legs", "Stood through a 30+ minute cycle without bailing."),
-        new Achievement(EarlyBirdId, "Early Bird", "Finished a standing cycle that started before 9 AM."),
-        new Achievement(NightOwlId, "Night Owl", "Finished a standing cycle past 10 PM."),
+        new Achievement(EarlyBirdId, "Early Bird", "Finished a standing cycle that started before 09:00."),
+        new Achievement(NightOwlId, "Night Owl", "Finished a standing cycle past 22:00."),
 
         new Achievement(WarmingUpId, "Warming Up", "Three days in a row at goal. The habit begins."),
         new Achievement(SevenDayStreakId, "7-Day Streak", "Seven days of hitting your daily goal in a row."),

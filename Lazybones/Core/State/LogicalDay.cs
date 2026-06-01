@@ -9,7 +9,7 @@ namespace Lazybones.Core.State;
 // rollover) attribute to the previous logical day — matching the user's
 // mental model of when their day starts.
 //
-// Passing TimeSpan.Zero degenerates to plain calendar-day behaviour; tests
+// Passing TimeSpan.Zero degenerates to plain calendar-day behavior; tests
 // and any caller that intentionally wants midnight buckets use that.
 public static class LogicalDay
 {

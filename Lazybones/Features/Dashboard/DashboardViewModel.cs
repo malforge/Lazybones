@@ -200,7 +200,7 @@ public class DashboardViewModel : ViewModelBase, IDisposable
     }
 
     // Derived from cycle goal × cycle length — the implicit minute equivalent
-    // of your daily commitment. The heatmap uses this to colour cells.
+    // of your daily commitment. The heatmap uses this to color cells.
     public int DailyMinuteThreshold => _state.DailyCycleGoal * _state.StandingTimeInMinutes;
 
     public bool StartWithWindows

@@ -8,7 +8,7 @@ using Avalonia.Threading;
 namespace Lazybones.Features.Shell;
 
 // A short-lived particle burst rendered on top of the main disk. Triggered
-// when a streak completes — small rotating rectangles spawn from the centre,
+// when a streak completes — small rotating rectangles spawn from the center,
 // fall under gravity with a subtle sine-wobble (the thing that sells "paper
 // confetti" rather than "rain"), fade out near the end of their lifetime,
 // then the burst stops on its own.
