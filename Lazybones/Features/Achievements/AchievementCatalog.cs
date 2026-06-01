@@ -1,8 +1,16 @@
 using System.Collections.Generic;
+using Lazybones.Localization;
 
 namespace Lazybones.Features.Achievements;
 
-public sealed record Achievement(string Id, string Title, string Description);
+// Title and Description are resolved through LocalizationService on every
+// access, so a language switch is reflected the next time the property is
+// read — no string snapshotting at construction time.
+public sealed record Achievement(string Id)
+{
+    public string Title => LocalizationService.Instance.Get($"Achievement_{Id}_Title");
+    public string Description => LocalizationService.Instance.Get($"Achievement_{Id}_Description");
+}
 
 public static class AchievementCatalog
 {
@@ -26,26 +34,23 @@ public static class AchievementCatalog
     public const string LongHaulId = "long_haul";
     public const string MountaineerId = "mountaineer";
 
-    public static IReadOnlyList<Achievement> All { get; } = new[]
-    {
-        new Achievement(FirstStandId, "First Stand", "You completed your first standing cycle. Welcome!"),
-        new Achievement(QuickDrawId, "Quick Draw", "Responded to a prompt within ten seconds."),
-        new Achievement(IronLegsId, "Iron Legs", "Stood through a 30+ minute cycle without bailing."),
-        new Achievement(EarlyBirdId, "Early Bird", "Finished a standing cycle that started before 09:00."),
-        new Achievement(NightOwlId, "Night Owl", "Finished a standing cycle past 22:00."),
-
-        new Achievement(WarmingUpId, "Warming Up", "Three days in a row at goal. The habit begins."),
-        new Achievement(SevenDayStreakId, "7-Day Streak", "Seven days of hitting your daily goal in a row."),
-        new Achievement(TwoWeekWonderId, "Two-Week Wonder", "Fourteen straight days. You're not playing."),
-        new Achievement(HabitFormedId, "Habit Formed", "Thirty days. Whatever this was, it's a habit now."),
-
-        new Achievement(DailyDriverId, "Daily Driver", "Completed five standing cycles in one day."),
-        new Achievement(OverachieverId, "Overachiever", "Stood for 1.5× your daily goal in a single day."),
-        new Achievement(DoubleDownId, "Double Down", "Doubled your daily goal in a single day."),
-        new Achievement(PerfectDayId, "Perfect Day", "Hit your daily goal without dismissing a single prompt."),
-
-        new Achievement(CenturionId, "Centurion", "Completed 100 standing cycles."),
-        new Achievement(LongHaulId, "Long Haul", "Ten cumulative hours of standing. Your back thanks you."),
-        new Achievement(MountaineerId, "Mountaineer", "One hundred cumulative hours of standing.")
-    };
+    public static IReadOnlyList<Achievement> All { get; } =
+    [
+        new(FirstStandId),
+        new(QuickDrawId),
+        new(IronLegsId),
+        new(EarlyBirdId),
+        new(NightOwlId),
+        new(WarmingUpId),
+        new(SevenDayStreakId),
+        new(TwoWeekWonderId),
+        new(HabitFormedId),
+        new(DailyDriverId),
+        new(OverachieverId),
+        new(DoubleDownId),
+        new(PerfectDayId),
+        new(CenturionId),
+        new(LongHaulId),
+        new(MountaineerId),
+    ];
 }

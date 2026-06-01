@@ -15,59 +15,20 @@ using Lazybones.Features.History;
 using Lazybones.Features.SessionPresence;
 using Lazybones.Features.StartAtLogin;
 using Lazybones.Features.Updates;
+using Lazybones.Localization;
 
 namespace Lazybones.Features.Shell;
 
 public class MainWindowViewModel : ViewModelBase, IDisposable
 {
-    private static readonly string[] YouCanSitNowTexts =
-    [
-        "You can sit now.",
-        "Rest your legs.",
-        "Sit down and relax.",
-        "Sit comfortably.",
-        "Take a seat.",
-        "Ok, sit.",
-        "Time to sit down.",
-        "Get your chair.",
-        "You can take a break now.",
-        "Butt on the chair."
-    ];
-
-    private static readonly string[] StandUpNowTexts =
-    [
-        "Stand up now!",
-        "Up, up, up!",
-        "Raise your desk!",
-        "Get up, get up!",
-        "Stand tall!",
-        "Time to stand up!",
-        "Shift to standing position!",
-        "Up, soldier!",
-        "Up, lazybones!",
-        "Get your a** up!"
-    ];
-
-    private static readonly string[] NewDayTexts =
-    [
-        "New day!",
-        "Fresh start.",
-        "Good morning!",
-        "Rise and shine.",
-        "Another lap around the sun.",
-        "Day one. Again.",
-        "Clean slate.",
-        "Here we go again.",
-        "Day reset.",
-        "Onwards!"
-    ];
+    private readonly LocalizationService _loc = LocalizationService.Instance;
 
     private string _hours = "00";
     private string _minutes = "00";
     private string _seconds = "00";
     private TimeSpan _time;
     private bool _isStanding;
-    private string _text = "Hang on...";
+    private string _text = string.Empty;
 
     private readonly Stopwatch _stopwatch = new();
     private bool _isRunning;
@@ -116,6 +77,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
         UpdateService.Instance.PropertyChanged += OnUpdateServicePropertyChanged;
         UpdateService.Instance.StartPolling();
+        _loc.CultureChanged += OnCultureChanged;
 
         // Validate position - if minimized (-32000) or off-screen, use default position
         var left = _state.Left ?? 100;
@@ -132,8 +94,8 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
         // Set text based on mode
         Text = IsStanding
-            ? PickRandom(StandUpNowTexts)
-            : PickRandom(YouCanSitNowTexts);
+            ? _loc.Pick("StandUp")
+            : _loc.Pick("SitDown");
 
         // Restore timer from saved state, or use defaults
         if (_state.ElapsedTimeInSeconds > 0)
@@ -257,9 +219,9 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         if (startStanding) StandUp(); else SitDown();
 
         var actionText = startStanding
-            ? PickRandom(StandUpNowTexts)
-            : PickRandom(YouCanSitNowTexts);
-        _overlay.ShowDayRollover(PickRandom(NewDayTexts), actionText);
+            ? _loc.Pick("StandUp")
+            : _loc.Pick("SitDown");
+        _overlay.ShowDayRollover(_loc.Pick("NewDay"), actionText);
         return true;
     }
 
@@ -485,6 +447,18 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
             OnPropertyChanged(nameof(AvailableVersionText));
     }
 
+    private void OnCultureChanged(object? sender, EventArgs e)
+    {
+        // Pull a fresh text in the new language from whichever pool/key matches
+        // the current mode. The "Locked..." pause state isn't distinguished
+        // from manual pause here — that's rare enough that falling back to the
+        // generic Mode_Paused string when not running is acceptable; the next
+        // OnScreenUnlocked tick sets the proper text.
+        Text = IsRunning
+            ? _loc.Pick(IsStanding ? "StandUp" : "SitDown")
+            : _loc.Get("Mode_Paused");
+    }
+
     public OverlayViewModel Overlay => _overlay;
 
     public string Hours
@@ -573,20 +547,19 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         // next tick.
         _stopwatch.Restart();
         Text = IsStanding
-            ? PickRandom(StandUpNowTexts)
-            : PickRandom(YouCanSitNowTexts);
+            ? _loc.Pick("StandUp")
+            : _loc.Pick("SitDown");
         IsRunning = true;
         EndPauseInterval();
     }
 
-    private void Pause(string? pauseText = "Paused...", PauseReason? trackAs = null)
+    private void Pause(string? pauseText = null, PauseReason? trackAs = null)
     {
         if (!IsRunning) return;
         // Reset (not Stop) so any residual elapsed is discarded; otherwise
         // Resume()'s next tick subtracts that residual from Time.
         _stopwatch.Reset();
-        if (pauseText != null)
-            Text = pauseText;
+        Text = pauseText ?? _loc.Get("Mode_Paused");
         IsRunning = false;
         if (trackAs.HasValue) StartPauseInterval(trackAs.Value);
     }
@@ -628,7 +601,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
     private void StandUp()
     {
-        Text = PickRandom(StandUpNowTexts);
+        Text = _loc.Pick("StandUp");
         Time = TimeSpan.FromMinutes(_state.StandingTimeInMinutes);
         ResetStopwatch();
         IsStanding = true;
@@ -637,7 +610,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
     private void SitDown()
     {
-        Text = PickRandom(YouCanSitNowTexts);
+        Text = _loc.Pick("SitDown");
         Time = TimeSpan.FromMinutes(_state.SittingTimeInMinutes);
         ResetStopwatch();
         IsStanding = false;
@@ -651,8 +624,6 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         else
             StandUp();
     }
-
-    private static string PickRandom(string[] pool) => pool[Random.Shared.Next(pool.Length)];
 
     private async Task TriggerAsync()
     {
@@ -671,8 +642,8 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
             var dialog = new ModeSwitchDialog();
             var randomText = IsStanding
-                ? PickRandom(YouCanSitNowTexts)
-                : PickRandom(StandUpNowTexts);
+                ? _loc.Pick("SitDown")
+                : _loc.Pick("StandUp");
             dialog.SetMessage(randomText);
 
             var mainWindow = Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
@@ -726,6 +697,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         _presence.Unlocked -= OnScreenUnlocked;
         _presence.Dispose();
         UpdateService.Instance.PropertyChanged -= OnUpdateServicePropertyChanged;
+        _loc.CultureChanged -= OnCultureChanged;
         AppDomain.CurrentDomain.ProcessExit -= OnProcessExit;
 
         _state.Left = (int)WindowPosition.X;
@@ -762,11 +734,8 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
     private void ConfirmToggle()
     {
-        var message = IsStanding
-            ? "Swap to sitting?"
-            : "Swap to standing?";
-
-        _overlay.ShowConfirmation("Swap", message, result =>
+        var message = _loc.Get(IsStanding ? "Dialog_Swap_ToSitting" : "Dialog_Swap_ToStanding");
+        _overlay.ShowConfirmation(_loc.Get("Dialog_Swap_Title"), message, result =>
         {
             if (!result) return;
             RecordCurrentCycle(CycleOutcome.Toggled);
@@ -776,7 +745,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
     private void ConfirmReset()
     {
-        _overlay.ShowConfirmation("Reset", "Reset the timer?", result =>
+        _overlay.ShowConfirmation(_loc.Get("Dialog_Reset_Title"), _loc.Get("Dialog_Reset_Message"), result =>
         {
             if (!result) return;
             RecordCurrentCycle(CycleOutcome.Reset);
@@ -807,7 +776,15 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
             SelectedTabIndex = initialTabIndex
         };
         _dashboard = new DashboardWindow { DataContext = vm };
-        _dashboard.Closed += (_, _) => _dashboard = null;
+        _dashboard.Closed += (_, _) =>
+        {
+            // Dashboard subscribes to LocalizationService and UpdateService;
+            // dispose so those handlers don't keep the (now-closed) view model
+            // alive — open/close cycles would otherwise leak one VM per cycle.
+            if (_dashboard?.DataContext is IDisposable disposable)
+                disposable.Dispose();
+            _dashboard = null;
+        };
 
         var owner = Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
             ? desktop.MainWindow
@@ -887,7 +864,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
         _autoPauseStartedAt = DateTime.Now;
         _autoPaused = true;
-        Pause("Locked...", PauseReason.ScreenLock);
+        Pause(_loc.Get("Mode_Locked"), PauseReason.ScreenLock);
     }
 
     private void OnScreenUnlocked(object? sender, EventArgs e)

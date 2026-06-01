@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using Avalonia.Threading;
 using Lazybones.Core.Mvvm;
 using Lazybones.Features.Achievements;
+using Lazybones.Localization;
 
 namespace Lazybones.Features.Shell;
 
 public class OverlayViewModel : ViewModelBase
 {
+    private readonly LocalizationService _loc = LocalizationService.Instance;
+
     private bool _isVisible;
     private string _title = string.Empty;
     private string _message = string.Empty;
@@ -75,7 +78,7 @@ public class OverlayViewModel : ViewModelBase
     {
         // Idle-resume preempts any visible toast or achievement queue. The
         // achievement queue will continue once the idle toast auto-dismisses.
-        Title = "Welcome back";
+        Title = _loc.Get("Toast_WelcomeBack");
         Message = FormatAwayDuration(awayFor);
         OverlayType = OverlayType.IdleResumeToast;
         IsVisible = true;
@@ -99,18 +102,18 @@ public class OverlayViewModel : ViewModelBase
         _toastTimer.Start();
     }
 
-    private static string FormatAwayDuration(TimeSpan d)
+    private string FormatAwayDuration(TimeSpan d)
     {
         if (d.TotalHours >= 1)
         {
             var h = (int)d.TotalHours;
-            return $"Resumed after {h}h {d.Minutes}m away";
+            return _loc.Format("Toast_ResumedHoursFormat", h, d.Minutes);
         }
         if (d.TotalMinutes >= 1)
         {
-            return $"Resumed after {(int)d.TotalMinutes}m away";
+            return _loc.Format("Toast_ResumedMinutesFormat", (int)d.TotalMinutes);
         }
-        return "Resumed";
+        return _loc.Get("Toast_ResumedShort");
     }
 
     private void TryShowNextAchievement()
@@ -151,7 +154,7 @@ public class OverlayViewModel : ViewModelBase
 
     public void ShowTimeAdjustment(TimeSpan currentTime, Action<bool> callback)
     {
-        Title = "Adjust Time";
+        Title = _loc.Get("TimeAdjust_Title");
         AdjustedTime = currentTime;
         TimeInput = $"{currentTime.Hours:00}:{currentTime.Minutes:00}:{currentTime.Seconds:00}";
         _currentTimeForAdjustment = currentTime;

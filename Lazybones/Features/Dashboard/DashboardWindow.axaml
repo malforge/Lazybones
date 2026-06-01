@@ -3,6 +3,7 @@
         xmlns:vm="using:Lazybones.Features.Dashboard"
         xmlns:controls="clr-namespace:Lazybones.Features.Stats"
         xmlns:behaviors="clr-namespace:Lazybones.Core.Behaviors"
+        xmlns:l="using:Lazybones.Localization"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="560"
@@ -201,26 +202,26 @@
                 <TabControl Grid.Row="1" SelectedIndex="{Binding SelectedTabIndex}">
 
                     <!-- ============================ STATS ============================ -->
-                    <TabItem Header="Stats">
+                    <TabItem Header="{l:Localize Tab_Stats}">
                         <StackPanel Spacing="16" Margin="18,12,18,18">
 
                             <Grid ColumnDefinitions="*,12,*">
                                 <Border Grid.Column="0" Classes="statcard">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Classes="label" Text="Today" />
+                                        <TextBlock Classes="label" Text="{l:Localize Stats_Today}" />
                                         <TextBlock Classes="h1" Text="{Binding TodayProgressText}" />
                                         <TextBlock Classes="muted" Text="{Binding TodayMinutesText}" />
                                     </StackPanel>
                                 </Border>
                                 <Border Grid.Column="2" Classes="statcard">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Classes="label" Text="Streak" />
+                                        <TextBlock Classes="label" Text="{l:Localize Stats_Streak}" />
                                         <StackPanel Orientation="Horizontal" Spacing="6">
                                             <TextBlock Classes="h1"
                                                        Text="{Binding CurrentStreak}"
                                                        Foreground="#FFFF8C42" />
                                             <TextBlock Classes="muted"
-                                                       Text="days"
+                                                       Text="{l:Localize Stats_StreakUnit}"
                                                        VerticalAlignment="Bottom"
                                                        Margin="0,0,0,5" />
                                         </StackPanel>
@@ -236,7 +237,7 @@
                                                           Height="100"
                                                           HorizontalAlignment="Stretch" />
                                         <TextBlock Classes="label"
-                                                   Text="Last 13 weeks · minutes per day"
+                                                   Text="{l:Localize Stats_HeatmapLabel}"
                                                    HorizontalAlignment="Center" />
                                     </StackPanel>
                                 </Border>
@@ -246,7 +247,7 @@
                                                                    Height="100"
                                                                    HorizontalAlignment="Stretch" />
                                         <TextBlock Classes="label"
-                                                   Text="Last 14 days · cycles per day"
+                                                   Text="{l:Localize Stats_BarsLabel}"
                                                    HorizontalAlignment="Center" />
                                     </StackPanel>
                                 </Border>
@@ -256,7 +257,7 @@
                     </TabItem>
 
                     <!-- ======================== ACHIEVEMENTS ======================== -->
-                    <TabItem Header="Achievements">
+                    <TabItem Header="{l:Localize Tab_Achievements}">
                         <Grid RowDefinitions="Auto,*" Margin="18,12,18,18">
                             <TextBlock Grid.Row="0"
                                        Classes="muted"
@@ -293,23 +294,31 @@
                     </TabItem>
 
                     <!-- ========================== SETTINGS ========================== -->
-                    <TabItem Header="Settings">
+                    <TabItem Header="{l:Localize Tab_Settings}">
                         <StackPanel Spacing="16" Margin="18,14,18,18">
 
                             <!-- Pinned to top so the auto-opened-on-first-launch
                                  view surfaces it immediately; otherwise it gets
                                  lost among the other settings. -->
                             <StackPanel Orientation="Horizontal" Spacing="10">
-                                <CheckBox Content="Open at login"
+                                <CheckBox Content="{l:Localize Settings_OpenAtLogin}"
                                           IsChecked="{Binding StartWithWindows}"
                                           VerticalAlignment="Center" />
                                 <Border Classes="pill">
-                                    <TextBlock Text="Recommended" />
+                                    <TextBlock Text="{l:Localize Settings_Recommended}" />
                                 </Border>
                             </StackPanel>
 
                             <StackPanel Spacing="4">
-                                <TextBlock Classes="label" Text="Standing time (minutes)" />
+                                <TextBlock Classes="label" Text="{l:Localize Settings_Language}" />
+                                <ComboBox ItemsSource="{Binding LanguageOptions}"
+                                          SelectedIndex="{Binding LanguageIndex}"
+                                          HorizontalAlignment="Left"
+                                          MinWidth="200" />
+                            </StackPanel>
+
+                            <StackPanel Spacing="4">
+                                <TextBlock Classes="label" Text="{l:Localize Settings_StandingMinutes}" />
                                 <NumericUpDown Value="{Binding StandingTime}"
                                                Minimum="1" Maximum="180" Increment="5"
                                                FormatString="0"
@@ -317,7 +326,7 @@
                             </StackPanel>
 
                             <StackPanel Spacing="4">
-                                <TextBlock Classes="label" Text="Sitting time (minutes)" />
+                                <TextBlock Classes="label" Text="{l:Localize Settings_SittingMinutes}" />
                                 <NumericUpDown Value="{Binding SittingTime}"
                                                Minimum="1" Maximum="240" Increment="10"
                                                FormatString="0"
@@ -325,7 +334,7 @@
                             </StackPanel>
 
                             <StackPanel Spacing="4">
-                                <TextBlock Classes="label" Text="Daily standing cycles" />
+                                <TextBlock Classes="label" Text="{l:Localize Settings_DailyCycles}" />
                                 <NumericUpDown Value="{Binding DailyCycleGoal}"
                                                Minimum="1" Maximum="20" Increment="1"
                                                FormatString="0"
@@ -333,7 +342,7 @@
                             </StackPanel>
 
                             <StackPanel Spacing="4">
-                                <TextBlock Classes="label" Text="Day rolls over at" />
+                                <TextBlock Classes="label" Text="{l:Localize Settings_DayRollover}" />
                                 <Button Classes="clockface"
                                         HorizontalAlignment="Left">
                                     <TextBlock Text="{Binding RolloverTimeText}" />
@@ -348,27 +357,27 @@
                             </StackPanel>
 
                             <StackPanel Spacing="4">
-                                <TextBlock Classes="label" Text="Start each day" />
+                                <TextBlock Classes="label" Text="{l:Localize Settings_StartEachDay}" />
                                 <ComboBox SelectedIndex="{Binding StartDayModeIndex}"
                                           HorizontalAlignment="Left"
                                           MinWidth="160">
-                                    <ComboBoxItem>Seated</ComboBoxItem>
-                                    <ComboBoxItem>Standing</ComboBoxItem>
+                                    <ComboBoxItem Content="{l:Localize Settings_StartSeated}" />
+                                    <ComboBoxItem Content="{l:Localize Settings_StartStanding}" />
                                 </ComboBox>
                             </StackPanel>
 
-                            <CheckBox Content="Always on top"
+                            <CheckBox Content="{l:Localize Settings_AlwaysOnTop}"
                                       IsChecked="{Binding AlwaysOnTop}" />
 
                             <TextBlock Classes="muted"
-                                       Text="Changes save automatically."
+                                       Text="{l:Localize Settings_AutoSaveHint}"
                                        Margin="0,4,0,0" />
 
                         </StackPanel>
                     </TabItem>
 
                     <!-- ========================== UPDATES =========================== -->
-                    <TabItem Header="Updates">
+                    <TabItem Header="{l:Localize Tab_Updates}">
                         <Grid Margin="18,12,18,18"
                               RowDefinitions="Auto,Auto,*,Auto"
                               RowSpacing="12">
@@ -376,7 +385,7 @@
                             <!-- Current version -->
                             <Border Grid.Row="0" Classes="statcard">
                                 <StackPanel Spacing="2">
-                                    <TextBlock Classes="label" Text="Running version" />
+                                    <TextBlock Classes="label" Text="{l:Localize Updates_RunningVersion}" />
                                     <TextBlock Classes="h1" Text="{Binding CurrentVersionText}" />
                                 </StackPanel>
                             </Border>
@@ -398,7 +407,7 @@
                                 <Grid RowDefinitions="Auto,*">
                                     <TextBlock Grid.Row="0"
                                                Classes="label"
-                                               Text="What's new"
+                                               Text="{l:Localize Updates_WhatsNew}"
                                                Margin="0,0,0,8" />
                                     <ScrollViewer Grid.Row="1"
                                                   HorizontalScrollBarVisibility="Disabled">
@@ -416,10 +425,10 @@
                                         Orientation="Horizontal"
                                         HorizontalAlignment="Right"
                                         Spacing="8">
-                                <Button Content="Check for updates"
+                                <Button Content="{l:Localize Updates_CheckButton}"
                                         Command="{Binding CheckForUpdatesCommand}"
                                         IsEnabled="{Binding CanCheckForUpdates}" />
-                                <Button Content="Restart now"
+                                <Button Content="{l:Localize Updates_RestartButton}"
                                         Command="{Binding RestartNowCommand}"
                                         IsVisible="{Binding HasUpdateReady}" />
                             </StackPanel>

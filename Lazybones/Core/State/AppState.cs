@@ -45,6 +45,11 @@ public class AppState
     // missing this property fall back to the default.
     public int DailyCycleGoal { get; set; } = 3;
     public bool StartWithWindows { get; set; }
+    // User's language preference. Empty/null = follow the OS UI culture
+    // (resolved at startup). When set, must match one of LocalizationService's
+    // supported codes ("en-US", "nb-NO"). Unknown values are treated as
+    // null and fall back to OS detection.
+    public string? Language { get; set; }
     // Flips to true the first time the Settings tab is auto-opened on launch
     // (introducing the user to the configuration surface). Separate from any
     // older flags so existing installs still get the one-time tour.

@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:behaviors="clr-namespace:Lazybones.Core.Behaviors"
         xmlns:controls="clr-namespace:Lazybones.Features.Stats"
+        xmlns:l="using:Lazybones.Localization"
         mc:Ignorable="d" d:DesignWidth="260" d:DesignHeight="260"
         x:Class="Lazybones.Features.Shell.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -227,7 +228,7 @@
                         BorderThickness="0"
                         IsVisible="{Binding HasStreak}"
                         Command="{Binding OpenStatsCommand}"
-                        ToolTip.Tip="Daily standing-goal streak — consecutive days at or above your goal. Click to open Stats.">
+                        ToolTip.Tip="{l:Localize Tooltip_Streak}">
                     <StackPanel Orientation="Horizontal" Spacing="3">
                         <PathIcon Width="14" Height="14"
                                   Data="{StaticResource FlameGeometry}"
@@ -254,7 +255,7 @@
                         BorderThickness="0"
                         IsVisible="{Binding HasUpdate}"
                         Command="{Binding OpenUpdatesCommand}"
-                        ToolTip.Tip="A new version is ready — click for release notes and to restart">
+                        ToolTip.Tip="{l:Localize Tooltip_Update}">
                     <StackPanel Orientation="Horizontal" Spacing="3">
                         <PathIcon Width="14" Height="14"
                                   Data="{StaticResource SystemUpdateGeometry}"
@@ -278,7 +279,7 @@
                             Spacing="5">
 
                     <Button Classes="play"
-                            ToolTip.Tip="Play/Pause"
+                            ToolTip.Tip="{l:Localize Tooltip_PlayPause}"
                             Command="{Binding PlayPauseCommand}">
                         <Panel>
                             <PathIcon Classes="btnicon"
@@ -290,17 +291,17 @@
                         </Panel>
                     </Button>
                     <Button Classes="reset"
-                            ToolTip.Tip="Reset"
+                            ToolTip.Tip="{l:Localize Tooltip_Reset}"
                             Command="{Binding ResetCommand}">
                         <PathIcon Classes="btnicon" Data="{StaticResource ResetGeometry}" />
                     </Button>
                     <Button Classes="swap"
-                            ToolTip.Tip="Swap standing/resting"
+                            ToolTip.Tip="{l:Localize Tooltip_Swap}"
                             Command="{Binding SwapCommand}">
                         <PathIcon Classes="btnicon" Data="{StaticResource SwapGeometry}" />
                     </Button>
                     <Button Classes="dashboard"
-                            ToolTip.Tip="Stats, achievements &amp; settings"
+                            ToolTip.Tip="{l:Localize Tooltip_Dashboard}"
                             Command="{Binding DashboardCommand}">
                         <PathIcon Classes="btnicon" Data="{StaticResource StatsGeometry}" />
                     </Button>
@@ -317,7 +318,7 @@
                         Background="Transparent"
                         BorderThickness="0"
                         Command="{Binding OpenAchievementsCommand}"
-                        ToolTip.Tip="Achievements progress. Click to open the Achievements tab.">
+                        ToolTip.Tip="{l:Localize Tooltip_Achievements}">
                     <StackPanel Orientation="Horizontal" Spacing="3">
                         <PathIcon Width="13" Height="13"
                                   Data="{StaticResource TrophyGeometry}"
@@ -368,13 +369,13 @@
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Center"
                                     Spacing="10">
-                            <Button Content="Yes"
+                            <Button Content="{l:Localize Dialog_Yes}"
                                     Width="72"
                                     Height="32"
                                     HorizontalContentAlignment="Center"
                                     VerticalContentAlignment="Center"
                                     Command="{Binding ConfirmOverlayCommand}" />
-                            <Button Content="No"
+                            <Button Content="{l:Localize Dialog_No}"
                                     Width="72"
                                     Height="32"
                                     HorizontalContentAlignment="Center"
@@ -393,7 +394,7 @@
                                       Data="{StaticResource CoffeeGeometry}"
                                       Foreground="#FF4CC2FF"
                                       VerticalAlignment="Center" />
-                            <TextBlock Text="Welcome back"
+                            <TextBlock Text="{l:Localize Toast_WelcomeBack}"
                                        FontSize="11"
                                        Foreground="#FF4CC2FF"
                                        VerticalAlignment="Center"
@@ -441,7 +442,7 @@
                                       Data="{StaticResource FlameGeometry}"
                                       Foreground="#FFFFD166"
                                       VerticalAlignment="Center" />
-                            <TextBlock Text="Achievement"
+                            <TextBlock Text="{l:Localize Toast_AchievementHeader}"
                                        FontSize="11"
                                        Foreground="#FFFFD166"
                                        VerticalAlignment="Center"
@@ -475,16 +476,16 @@
                                      TextAlignment="Center"
                                      FontSize="14"
                                      HorizontalAlignment="Stretch"
-                                     PlaceholderText="30 or 5m or +2m"
+                                     PlaceholderText="{l:Localize TimeAdjust_Placeholder}"
                                      GotFocus="TimeInputBox_OnGotFocus" />
-                            <TextBlock Text="Examples: 30, 1.5, +5m, -10s, 01:30:00"
+                            <TextBlock Text="{l:Localize TimeAdjust_Examples}"
                                        FontSize="9"
                                        Foreground="{DynamicResource DisabledColor}"
                                        TextAlignment="Center"
                                        TextWrapping="Wrap" />
                         </StackPanel>
 
-                        <TextBlock Text="This cycle won't count toward achievements or streak."
+                        <TextBlock Text="{l:Localize TimeAdjust_Warning}"
                                    FontSize="10"
                                    Foreground="#FFE6B450"
                                    TextAlignment="Center"
@@ -494,13 +495,13 @@
                                     HorizontalAlignment="Center"
                                     Spacing="10"
                                     Margin="0,4,0,0">
-                            <Button Content="Apply"
+                            <Button Content="{l:Localize Dialog_Apply}"
                                     Width="72"
                                     Height="30"
                                     HorizontalContentAlignment="Center"
                                     VerticalContentAlignment="Center"
                                     Command="{Binding ConfirmOverlayCommand}" />
-                            <Button Content="Cancel"
+                            <Button Content="{l:Localize Dialog_Cancel}"
                                     Width="72"
                                     Height="30"
                                     HorizontalContentAlignment="Center"
