@@ -12,8 +12,6 @@ internal sealed class WindowsStartupService : IStartupService
     private const string AppName = "Lazybones";
     private const string LegacyAppName = "StandUp";
 
-    public string LoginItemLabel => "Start with Windows";
-
     public bool IsEnabled
     {
         get

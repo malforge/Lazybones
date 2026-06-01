@@ -5,7 +5,6 @@ namespace Lazybones.Features.StartAtLogin;
 public interface IStartupService
 {
     bool IsEnabled { get; }
-    string LoginItemLabel { get; }
 
     /// <summary>
     /// Attempts to enable or disable launch-at-login. Returns true on success, false if the
@@ -41,5 +40,4 @@ internal sealed class NoOpStartupService : IStartupService
 {
     public bool IsEnabled => false;
     public bool SetEnabled(bool enabled) => false;
-    public string LoginItemLabel => "Start at login";
 }

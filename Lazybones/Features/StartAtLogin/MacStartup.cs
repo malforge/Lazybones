@@ -29,8 +29,6 @@ internal sealed class MacStartupService : IStartupService
     private static string LegacyPlistPath(string label) =>
         Path.Combine(LaunchAgentsDir, $"{label}.plist");
 
-    public string LoginItemLabel => "Open at login";
-
     public bool IsEnabled
     {
         get

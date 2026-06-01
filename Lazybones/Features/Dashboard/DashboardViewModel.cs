@@ -231,8 +231,6 @@ public class DashboardViewModel : ViewModelBase, IDisposable
         }
     }
 
-    public string StartWithOsLabel => StartupService.Instance.LoginItemLabel;
-
     private DateOnly Today => LogicalDay.From(DateTime.Now, _state.DayRolloverTime);
 
     public int TodayStandingMinutes => _history.StandingMinutesOn(Today, _state.DayRolloverTime);

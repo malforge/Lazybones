@@ -300,7 +300,7 @@
                                  view surfaces it immediately; otherwise it gets
                                  lost among the other settings. -->
                             <StackPanel Orientation="Horizontal" Spacing="10">
-                                <CheckBox Content="{Binding StartWithOsLabel}"
+                                <CheckBox Content="Open at login"
                                           IsChecked="{Binding StartWithWindows}"
                                           VerticalAlignment="Center" />
                                 <Border Classes="pill">
