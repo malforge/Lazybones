@@ -61,6 +61,11 @@ public class DashboardViewModel : ViewModelBase, IDisposable
         _loc.CultureChanged -= OnCultureChanged;
     }
 
+    // Swapped for a fresh instance on culture change (see OnCultureChanged):
+    // compiled bindings only re-read {Binding Strings.*} when the Strings
+    // reference itself changes, since the leaf objects don't raise INPC.
+    public DashboardStrings Strings { get; private set; } = new();
+
     public int SelectedTabIndex
     {
         get => _selectedTabIndex;
@@ -126,6 +131,10 @@ public class DashboardViewModel : ViewModelBase, IDisposable
         // through SelectedIndex=-1 and feed that back into LanguageIndex.
         _achievements = BuildAchievements();
         RefreshLanguageOptions();
+        // Swap in a fresh Strings instance so every {Binding Strings.*} re-reads
+        // in the new language — a same-reference notify wouldn't re-read leaves.
+        Strings = new DashboardStrings();
+        OnPropertyChanged(nameof(Strings));
         OnPropertyChanged(nameof(Achievements));
         OnPropertyChanged(nameof(UnlockedSummary));
         OnPropertyChanged(nameof(TodayProgressText));

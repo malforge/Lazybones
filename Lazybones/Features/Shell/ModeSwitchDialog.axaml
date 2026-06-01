@@ -3,7 +3,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:Lazybones.Features.Shell"
-        xmlns:l="using:Lazybones.Localization"
         mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="300"
         x:Class="Lazybones.Features.Shell.ModeSwitchDialog"
         x:DataType="vm:ModeSwitchDialogViewModel"
@@ -34,7 +33,7 @@
 
     <Grid RowDefinitions="Auto, Auto, Auto" Margin="32">
         <TextBlock Grid.Row="0"
-                   Text="{l:Localize ModeSwitch_Header}"
+                   Text="{Binding Strings.ModeSwitchHeader}"
                    FontSize="14"
                    Foreground="#FFAAAAAA"
                    TextAlignment="Center"
@@ -54,13 +53,13 @@
                     HorizontalAlignment="Center"
                     Spacing="20"
                     Margin="0,32,0,0">
-            <Button Content="{l:Localize ModeSwitch_StartNow}"
+            <Button Content="{Binding Strings.ModeSwitchStartNow}"
                     Classes="primary"
                     Width="140"
                     Height="56"
                     FontSize="16"
                     Command="{Binding StartNowCommand}" />
-            <Button Content="{l:Localize ModeSwitch_Dismiss}"
+            <Button Content="{Binding Strings.ModeSwitchDismiss}"
                     Width="140"
                     Height="56"
                     FontSize="16"

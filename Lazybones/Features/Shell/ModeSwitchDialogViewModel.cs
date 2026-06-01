@@ -23,6 +23,8 @@ public class ModeSwitchDialogViewModel : ViewModelBase
         });
     }
 
+    public ModeSwitchStrings Strings { get; } = new();
+
     public string Message
     {
         get => _message;

@@ -1,20 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 
 namespace Lazybones.Localization;
 
 // Singleton language registry. Every user-facing string in the app routes
-// through Get(key) or the LocalizeExtension XAML markup extension; random
-// text pools route through Pick(poolName).
+// through Get(key) — directly, or via the per-view *Strings objects that XAML
+// binds with compiled bindings; random text pools route through Pick(poolName).
 //
-// Live switching: Apply() raises PropertyChanged("Item[]") so any binding
-// to LocalizationService[key] refreshes without a window reopen. Non-XAML
-// callers that cache a translation (e.g. derived properties on a ViewModel)
-// must subscribe to CultureChanged and re-raise their own PropertyChanged.
-public sealed class LocalizationService : INotifyPropertyChanged
+// Live switching: Apply() raises CultureChanged. Callers that cache or expose
+// translations (the *Strings groups and derived view-model properties)
+// subscribe and re-raise their own PropertyChanged, so bindings refresh without
+// a window reopen.
+public sealed class LocalizationService
 {
     public const string AutoCode = "";
 
@@ -39,13 +38,10 @@ public sealed class LocalizationService : INotifyPropertyChanged
 
     private LocalizationService() { }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
     public event EventHandler? CultureChanged;
 
-    public string CurrentLanguageCode => _current.Code;
-
-    // The user's stored preference (empty = follow OS). Distinct from
-    // CurrentLanguageCode, which is what got resolved.
+    // The user's stored preference (empty = follow OS). Distinct from the
+    // resolved language, which may fall back to the OS culture or en-US.
     public string Preference => _preference;
 
     public IReadOnlyList<(string Code, string DisplayName)> AvailableLanguages =>
@@ -57,9 +53,8 @@ public sealed class LocalizationService : INotifyPropertyChanged
         var next = Resolve(_preference);
         if (next.Code == _current.Code) return;
         _current = next;
-        // CurrentLanguageCode is what LocalizeExtension's converter binds to;
-        // every {l:Localize Key} re-evaluates when this property changes.
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLanguageCode)));
+        // Notify everything that caches or exposes translations so bindings
+        // (the *Strings groups, derived view-model properties) refresh live.
         CultureChanged?.Invoke(this, EventArgs.Empty);
     }
 

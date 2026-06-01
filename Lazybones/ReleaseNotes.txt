@@ -1,3 +1,6 @@
+v.1.2.1
+   - Fix: the localized interface was broken in the 1.2.0 release build — the dashboard tabs showed an internal code name instead of their labels, and changing the language didn't take effect until the window was reopened. The 1.2.0 language work routed labels through a reflection-based binding that the release build's trimming stripped out. Localized text now uses compiled bindings, which survive trimming, so tabs, labels, tooltips, dialogs, and live language switching all work again in packaged builds.
+
 v.1.2.0
    - New: Norwegian Bokmål translation alongside English. A language picker is pinned at the top of Settings; "Follow OS language" (the default) matches your system culture, and "English" / "Norsk bokmål" force one explicitly. Switching is live — every label, tooltip, dialog, and toast updates without a restart. The random sit/stand/new-day prompts on the disk are authored separately per locale rather than translated word-for-word, so the Norwegian variants don't read like a translation.
    - "Open at login" now reads the same on Windows and macOS (it used to say "Start with Windows" on Windows — same toggle, just a more consistent phrasing).

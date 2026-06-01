@@ -457,7 +457,18 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         Text = IsRunning
             ? _loc.Pick(IsStanding ? "StandUp" : "SitDown")
             : _loc.Get("Mode_Paused");
+
+        // Swap in a fresh Strings instance so every {Binding Strings.*}
+        // (tooltips, dialog buttons, toasts) re-reads in the new language — a
+        // same-reference notify wouldn't re-read leaves.
+        Strings = new MainWindowStrings();
+        OnPropertyChanged(nameof(Strings));
     }
+
+    // Swapped for a fresh instance on culture change (see OnCultureChanged):
+    // compiled bindings only re-read {Binding Strings.*} when the reference
+    // changes, since the leaf objects don't raise INPC.
+    public MainWindowStrings Strings { get; private set; } = new();
 
     public OverlayViewModel Overlay => _overlay;
 
