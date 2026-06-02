@@ -1,3 +1,6 @@
+v.1.4.0
+   - New: optional clock-face background image. Pick any image in Settings to show it centered on the disk, with sliders for scale (0–4×, where 1 fills the face) and opacity (0–1). When scaled past the face, two more sliders pan it horizontally and vertically to frame the part you want. Everything updates the disk live as you drag. If the chosen image later goes missing, the disk simply shows no background and a one-time notice appears at startup.
+
 v.1.3.0
    - New: "paused when away" can now be set per mode. Locking your screen or stepping away pauses the timer based on the mode you're in — standing pauses by default (time away isn't standing at your desk, so the cycle shouldn't complete while you're gone), while sitting keeps counting by default (time away from your chair is time not sitting, so it brings your next stand reminder closer). Both are in Settings.
    - New: hover tooltips on every setting, explaining in plain language what each one does.

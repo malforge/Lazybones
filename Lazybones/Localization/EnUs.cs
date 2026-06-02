@@ -44,6 +44,16 @@ internal static class EnUs
         ["Settings_SeatedPausedWhenAway"] = "Seated is paused when away",
         ["Settings_AutoSaveHint"] = "Changes save automatically.",
 
+        // -- Clock-face background -----------------------------------------
+        ["Settings_ClockFace"] = "Clock face background",
+        ["Settings_ClockFaceChoose"] = "Choose image…",
+        ["Settings_ClockFaceClear"] = "Clear",
+        ["Settings_ClockFaceScale"] = "Background scale",
+        ["Settings_ClockFaceAlpha"] = "Background opacity",
+        ["Settings_ClockFaceOffsetX"] = "Horizontal position",
+        ["Settings_ClockFaceOffsetY"] = "Vertical position",
+        ["Settings_ClockFacePickerTitle"] = "Choose a clock face background",
+
         // -- Settings tooltips (hover explanations) ------------------------
         ["Settings_OpenAtLogin_Tip"] = "Launch Get Up, Lazybones! automatically when you sign in, so the reminder is always running in the background.",
         ["Settings_Language_Tip"] = "Language for the app's interface. \"Follow OS language\" matches your system; pick a specific language to override it.",
@@ -55,6 +65,7 @@ internal static class EnUs
         ["Settings_AlwaysOnTop_Tip"] = "Keep the disk floating above other windows so it stays visible while you work.",
         ["Settings_StandingPausedWhenAway_Tip"] = "When you lock the screen or step away while standing, pause the timer and pick up where you left off on return. Off: the standing cycle keeps counting while you're gone.",
         ["Settings_SeatedPausedWhenAway_Tip"] = "When you lock the screen or step away while seated, pause the timer. Off: the timer keeps running, so time away from your desk counts toward your next stand reminder.",
+        ["Settings_ClockFace_Tip"] = "Show an image of your choice centered on the disk. Scale resizes it (1 fills the face), opacity fades it behind the timer. The image is referenced from where it lives on disk — if you move or delete it, the disk just shows no background.",
 
         // -- Updates tab ---------------------------------------------------
         ["Updates_RunningVersion"] = "Running version",
@@ -96,6 +107,8 @@ internal static class EnUs
         ["TimeAdjust_Warning"] = "This cycle won't count toward achievements or streak.",
 
         // Toasts
+        ["Toast_ImageLoadFailedTitle"] = "Clock face background",
+        ["Toast_ImageLoadFailed"] = "Couldn't load the saved image — it may have moved or been deleted.",
         ["Toast_WelcomeBack"] = "Welcome back",
         ["Toast_AchievementHeader"] = "Achievement",
         ["Toast_ResumedHoursFormat"] = "Resumed after {0}h {1}m away",

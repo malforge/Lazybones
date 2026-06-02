@@ -88,6 +88,20 @@ public class OverlayViewModel : ViewModelBase
         _toastTimer.Start();
     }
 
+    // Generic auto-dismiss notice (e.g. "couldn't load the clock face image").
+    // Preempts any visible toast, like the rollover/idle toasts.
+    public void ShowNotice(string title, string message)
+    {
+        Title = title;
+        Message = message;
+        OverlayType = OverlayType.NoticeToast;
+        IsVisible = true;
+
+        _toastTimer?.Stop();
+        _toastTimer = new DispatcherTimer(TimeSpan.FromSeconds(4), DispatcherPriority.Background, OnToastTick);
+        _toastTimer.Start();
+    }
+
     public void ShowDayRollover(string title, string message)
     {
         // Preempts any visible toast or queued achievement, same as the idle
@@ -141,7 +155,7 @@ public class OverlayViewModel : ViewModelBase
     {
         _toastTimer?.Stop();
         _toastTimer = null;
-        if (OverlayType is OverlayType.IdleResumeToast or OverlayType.DayRolloverToast)
+        if (OverlayType is OverlayType.IdleResumeToast or OverlayType.DayRolloverToast or OverlayType.NoticeToast)
         {
             IsVisible = false;
             // After the preempting toast clears, drain any achievements that
@@ -198,5 +212,6 @@ public enum OverlayType
     TimeAdjustment,
     AchievementToast,
     IdleResumeToast,
-    DayRolloverToast
+    DayRolloverToast,
+    NoticeToast
 }

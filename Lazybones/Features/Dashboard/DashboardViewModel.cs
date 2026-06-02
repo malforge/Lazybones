@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows.Input;
 using Lazybones.Core.Mvvm;
@@ -27,18 +28,21 @@ public class DashboardViewModel : ViewModelBase, IDisposable
     private readonly IHistoryStore _history;
     private readonly Action _onDailyGoalChanged;
     private readonly Action _onAlwaysOnTopChanged;
+    private readonly Action _onClockFaceChanged;
     private readonly UpdateService _updates = UpdateService.Instance;
     private readonly LocalizationService _loc = LocalizationService.Instance;
     private int _selectedTabIndex;
     private IReadOnlyList<AchievementViewItem> _achievements = [];
     private readonly ObservableCollection<string> _languageOptions = new();
 
-    public DashboardViewModel(AppState state, IHistoryStore history, Action onDailyGoalChanged, Action onAlwaysOnTopChanged)
+    public DashboardViewModel(AppState state, IHistoryStore history, Action onDailyGoalChanged,
+        Action onAlwaysOnTopChanged, Action onClockFaceChanged)
     {
         _state = state;
         _history = history;
         _onDailyGoalChanged = onDailyGoalChanged;
         _onAlwaysOnTopChanged = onAlwaysOnTopChanged;
+        _onClockFaceChanged = onClockFaceChanged;
 
         _achievements = BuildAchievements();
         RefreshLanguageOptions();
@@ -48,6 +52,7 @@ public class DashboardViewModel : ViewModelBase, IDisposable
 
         CheckForUpdatesCommand = new RelayCommand(() => _ = _updates.CheckAsync());
         RestartNowCommand = new RelayCommand(_updates.ApplyAndRestart);
+        ClearClockFaceImageCommand = new RelayCommand(ClearClockFaceImage);
 
         _updates.PropertyChanged += OnUpdateServicePropertyChanged;
         _loc.CultureChanged += OnCultureChanged;
@@ -345,6 +350,96 @@ public class DashboardViewModel : ViewModelBase, IDisposable
             _state.SaveState();
             OnPropertyChanged(nameof(SeatedPausedWhenAway));
         }
+    }
+
+    // -- Clock-face background ---------------------------------------------
+    // The image itself is loaded and rendered by MainWindowViewModel; these
+    // just edit the shared AppState and ping it (via _onClockFaceChanged) to
+    // refresh the disk live. The file is picked in DashboardWindow code-behind
+    // (a file dialog needs the window's TopLevel) and handed back via
+    // SetClockFaceImage.
+    public bool HasClockFaceImage => !string.IsNullOrEmpty(_state.ClockFaceImagePath);
+
+    public string ClockFaceImageName => Path.GetFileName(_state.ClockFaceImagePath ?? string.Empty);
+
+    public double ClockFaceImageScale
+    {
+        get => _state.ClockFaceImageScale;
+        set
+        {
+            if (Math.Abs(_state.ClockFaceImageScale - value) < 0.0001) return;
+            _state.ClockFaceImageScale = value;
+            _state.SaveState();
+            OnPropertyChanged(nameof(ClockFaceImageScale));
+            // Panning only does anything once the image overflows the face.
+            OnPropertyChanged(nameof(CanPanClockFace));
+            _onClockFaceChanged();
+        }
+    }
+
+    // Pan sliders only matter when the image is scaled past the face.
+    public bool CanPanClockFace => HasClockFaceImage && _state.ClockFaceImageScale > 1.0;
+
+    public double ClockFaceImageOffsetX
+    {
+        get => _state.ClockFaceImageOffsetX;
+        set
+        {
+            if (Math.Abs(_state.ClockFaceImageOffsetX - value) < 0.0001) return;
+            _state.ClockFaceImageOffsetX = value;
+            _state.SaveState();
+            OnPropertyChanged(nameof(ClockFaceImageOffsetX));
+            _onClockFaceChanged();
+        }
+    }
+
+    public double ClockFaceImageOffsetY
+    {
+        get => _state.ClockFaceImageOffsetY;
+        set
+        {
+            if (Math.Abs(_state.ClockFaceImageOffsetY - value) < 0.0001) return;
+            _state.ClockFaceImageOffsetY = value;
+            _state.SaveState();
+            OnPropertyChanged(nameof(ClockFaceImageOffsetY));
+            _onClockFaceChanged();
+        }
+    }
+
+    public double ClockFaceImageAlpha
+    {
+        get => _state.ClockFaceImageAlpha;
+        set
+        {
+            if (Math.Abs(_state.ClockFaceImageAlpha - value) < 0.0001) return;
+            _state.ClockFaceImageAlpha = value;
+            _state.SaveState();
+            OnPropertyChanged(nameof(ClockFaceImageAlpha));
+            _onClockFaceChanged();
+        }
+    }
+
+    public ICommand ClearClockFaceImageCommand { get; }
+
+    public void SetClockFaceImage(string path)
+    {
+        _state.ClockFaceImagePath = path;
+        _state.SaveState();
+        OnPropertyChanged(nameof(HasClockFaceImage));
+        OnPropertyChanged(nameof(ClockFaceImageName));
+        OnPropertyChanged(nameof(CanPanClockFace));
+        _onClockFaceChanged();
+    }
+
+    private void ClearClockFaceImage()
+    {
+        if (string.IsNullOrEmpty(_state.ClockFaceImagePath)) return;
+        _state.ClockFaceImagePath = null;
+        _state.SaveState();
+        OnPropertyChanged(nameof(HasClockFaceImage));
+        OnPropertyChanged(nameof(ClockFaceImageName));
+        OnPropertyChanged(nameof(CanPanClockFace));
+        _onClockFaceChanged();
     }
 
     private DateOnly Today => LogicalDay.From(DateTime.Now, _state.DayRolloverTime);

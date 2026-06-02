@@ -389,6 +389,53 @@
                                           IsChecked="{Binding SeatedPausedWhenAway}"
                                           ToolTip.Tip="{Binding Strings.SettingsSeatedPausedWhenAwayTip}" />
 
+                                <!-- Clock-face background: pick an image, then
+                                     scale (0..2) and fade (0..1) it. Scale/alpha
+                                     bind straight to the disk for a live preview;
+                                     the file is picked in code-behind. -->
+                                <StackPanel Spacing="6"
+                                            ToolTip.Tip="{Binding Strings.SettingsClockFaceTip}">
+                                    <TextBlock Classes="label" Text="{Binding Strings.SettingsClockFace}" />
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Button Content="{Binding Strings.SettingsClockFaceChoose}"
+                                                Click="ChooseClockFaceImage_OnClick" />
+                                        <Button Content="{Binding Strings.SettingsClockFaceClear}"
+                                                Command="{Binding ClearClockFaceImageCommand}"
+                                                IsVisible="{Binding HasClockFaceImage}" />
+                                    </StackPanel>
+                                    <TextBlock Classes="muted"
+                                               Text="{Binding ClockFaceImageName}"
+                                               IsVisible="{Binding HasClockFaceImage}"
+                                               TextTrimming="CharacterEllipsis" />
+
+                                    <TextBlock Classes="label"
+                                               Text="{Binding Strings.SettingsClockFaceScale}"
+                                               Margin="0,6,0,0" />
+                                    <Slider Minimum="0" Maximum="4"
+                                            Value="{Binding ClockFaceImageScale}"
+                                            IsEnabled="{Binding HasClockFaceImage}" />
+
+                                    <TextBlock Classes="label"
+                                               Text="{Binding Strings.SettingsClockFaceAlpha}" />
+                                    <Slider Minimum="0" Maximum="1"
+                                            Value="{Binding ClockFaceImageAlpha}"
+                                            IsEnabled="{Binding HasClockFaceImage}" />
+
+                                    <!-- Pan: only meaningful once the image is
+                                         scaled past the face, so gated on that. -->
+                                    <TextBlock Classes="label"
+                                               Text="{Binding Strings.SettingsClockFaceOffsetX}" />
+                                    <Slider Minimum="0" Maximum="1"
+                                            Value="{Binding ClockFaceImageOffsetX}"
+                                            IsEnabled="{Binding CanPanClockFace}" />
+
+                                    <TextBlock Classes="label"
+                                               Text="{Binding Strings.SettingsClockFaceOffsetY}" />
+                                    <Slider Minimum="0" Maximum="1"
+                                            Value="{Binding ClockFaceImageOffsetY}"
+                                            IsEnabled="{Binding CanPanClockFace}" />
+                                </StackPanel>
+
                                 <TextBlock Classes="muted"
                                            Text="{Binding Strings.SettingsAutoSaveHint}"
                                            Margin="0,4,0,0" />

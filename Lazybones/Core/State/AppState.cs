@@ -86,6 +86,19 @@ public class AppState
     public bool StandingPausedWhenAway { get; set; } = true;
     public bool SeatedPausedWhenAway { get; set; }
 
+    // Optional decorative image shown centered on the clock face. Null/empty =
+    // none. Scale is a multiplier on the uniform-fit size (1.0 = fills the
+    // face), clamped 0..2 by the settings slider; Alpha is 0..1 opacity. A path
+    // that no longer loads is reported via a toast and otherwise ignored.
+    public string? ClockFaceImagePath { get; set; }
+    public double ClockFaceImageScale { get; set; } = 1.0;
+    public double ClockFaceImageAlpha { get; set; } = 1.0;
+    // Pan position when the image is scaled past the face (scale > 1), as the
+    // fixed point the image scales around: X 0 = left edge .. 1 = right edge,
+    // Y 0 = top .. 1 = bottom. 0.5/0.5 = centered. No effect at scale <= 1.
+    public double ClockFaceImageOffsetX { get; set; } = 0.5;
+    public double ClockFaceImageOffsetY { get; set; } = 0.5;
+
     // The most recent rollover boundary we've already applied. Used to decide
     // whether a rollover is due on startup / unlock / tick. Null means "no
     // rollover applied yet" — first run anchors it to the most recent past

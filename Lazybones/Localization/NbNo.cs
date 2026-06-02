@@ -45,6 +45,16 @@ internal static class NbNo
         ["Settings_SeatedPausedWhenAway"] = "Sittende settes på pause når du er borte",
         ["Settings_AutoSaveHint"] = "Endringer lagres automatisk.",
 
+        // -- Klokkeskive-bakgrunn ------------------------------------------
+        ["Settings_ClockFace"] = "Bakgrunn på klokkeskiven",
+        ["Settings_ClockFaceChoose"] = "Velg bilde…",
+        ["Settings_ClockFaceClear"] = "Fjern",
+        ["Settings_ClockFaceScale"] = "Bakgrunnsstørrelse",
+        ["Settings_ClockFaceAlpha"] = "Bakgrunnsgjennomsikt",
+        ["Settings_ClockFaceOffsetX"] = "Vannrett posisjon",
+        ["Settings_ClockFaceOffsetY"] = "Loddrett posisjon",
+        ["Settings_ClockFacePickerTitle"] = "Velg en bakgrunn for klokkeskiven",
+
         // -- Settings tooltips (hover-forklaringer) ------------------------
         ["Settings_OpenAtLogin_Tip"] = "Start Get Up, Lazybones! automatisk når du logger inn, slik at påminneren alltid kjører i bakgrunnen.",
         ["Settings_Language_Tip"] = "Språk for appens grensesnitt. \"Følg systemspråk\" matcher systemet ditt; velg et bestemt språk for å overstyre det.",
@@ -56,6 +66,7 @@ internal static class NbNo
         ["Settings_AlwaysOnTop_Tip"] = "Hold skiven flytende over andre vinduer slik at den er synlig mens du jobber.",
         ["Settings_StandingPausedWhenAway_Tip"] = "Når du låser skjermen eller går fra mens du står, settes tidtakeren på pause og fortsetter der du slapp når du kommer tilbake. Av: stå-syklusen fortsetter å telle mens du er borte.",
         ["Settings_SeatedPausedWhenAway_Tip"] = "Når du låser skjermen eller går fra mens du sitter, settes tidtakeren på pause. Av: tidtakeren fortsetter å gå, så tid borte fra pulten teller mot neste påminnelse om å reise deg.",
+        ["Settings_ClockFace_Tip"] = "Vis et bilde du velger, sentrert på skiven. Størrelse endrer skaleringen (1 fyller skiven), gjennomsikt toner det bak tidtakeren. Bildet hentes fra der det ligger på disken — flytter eller sletter du det, viser skiven bare ingen bakgrunn.",
 
         // -- Updates tab ---------------------------------------------------
         ["Updates_RunningVersion"] = "Kjørende versjon",
@@ -97,6 +108,8 @@ internal static class NbNo
         ["TimeAdjust_Warning"] = "Denne syklusen teller ikke mot prestasjoner eller rekke.",
 
         // Toasts
+        ["Toast_ImageLoadFailedTitle"] = "Bakgrunn på klokkeskiven",
+        ["Toast_ImageLoadFailed"] = "Kunne ikke laste det lagrede bildet — det kan ha blitt flyttet eller slettet.",
         ["Toast_WelcomeBack"] = "Velkommen tilbake",
         ["Toast_AchievementHeader"] = "Prestasjon",
         ["Toast_ResumedHoursFormat"] = "Fortsatte etter {0}t {1}m borte",

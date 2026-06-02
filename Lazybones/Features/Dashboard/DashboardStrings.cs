@@ -55,6 +55,16 @@ public sealed class DashboardStrings
     public string SettingsStandingPausedWhenAwayTip => L.Get("Settings_StandingPausedWhenAway_Tip");
     public string SettingsSeatedPausedWhenAwayTip => L.Get("Settings_SeatedPausedWhenAway_Tip");
 
+    // Clock-face background
+    public string SettingsClockFace => L.Get("Settings_ClockFace");
+    public string SettingsClockFaceChoose => L.Get("Settings_ClockFaceChoose");
+    public string SettingsClockFaceClear => L.Get("Settings_ClockFaceClear");
+    public string SettingsClockFaceScale => L.Get("Settings_ClockFaceScale");
+    public string SettingsClockFaceAlpha => L.Get("Settings_ClockFaceAlpha");
+    public string SettingsClockFaceOffsetX => L.Get("Settings_ClockFaceOffsetX");
+    public string SettingsClockFaceOffsetY => L.Get("Settings_ClockFaceOffsetY");
+    public string SettingsClockFaceTip => L.Get("Settings_ClockFace_Tip");
+
     // Updates tab
     public string UpdatesRunningVersion => L.Get("Updates_RunningVersion");
     public string UpdatesWhatsNew => L.Get("Updates_WhatsNew");

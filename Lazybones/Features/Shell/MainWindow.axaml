@@ -163,6 +163,31 @@
             BoxShadow="0 4 12 0 #66000000">
 
         <Grid>
+            <!-- Optional decorative clock-face background. Bottom of the stack
+                 so the rings and timer draw over it; clipped to the disk, then
+                 scaled (0..4, 1 = fills the face) about its center, panned by a
+                 translation when scaled past the face, and faded (0..1). -->
+            <Panel IsHitTestVisible="False" IsVisible="{Binding HasClockFaceImage}">
+                <Panel.Clip>
+                    <EllipseGeometry Center="130,130" RadiusX="130" RadiusY="130" />
+                </Panel.Clip>
+                <Image Source="{Binding ClockFaceImage}"
+                       Width="260" Height="260"
+                       Stretch="Uniform"
+                       Opacity="{Binding ClockFaceImageAlpha}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       RenderTransformOrigin="50%,50%">
+                    <Image.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="{Binding ClockFaceImageScale}"
+                                            ScaleY="{Binding ClockFaceImageScale}" />
+                            <TranslateTransform X="{Binding ClockFaceImageTranslateX}"
+                                                Y="{Binding ClockFaceImageTranslateY}" />
+                        </TransformGroup>
+                    </Image.RenderTransform>
+                </Image>
+            </Panel>
+
             <!-- Layered progress rings (visual only) -->
             <controls:ProgressRings
                 IsHitTestVisible="False"
@@ -426,6 +451,24 @@
                         <TextBlock Text="{Binding Overlay.Message}"
                                    FontWeight="Bold"
                                    FontSize="13"
+                                   Foreground="{DynamicResource ForegroundColor}"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <!-- Notice Toast (auto-dismiss, no buttons): generic info,
+                         e.g. the clock-face background image failed to load. -->
+                    <StackPanel IsVisible="{Binding Overlay.OverlayType, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static vm:OverlayType.NoticeToast}}"
+                                Spacing="6"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center">
+                        <TextBlock Text="{Binding Overlay.Title}"
+                                   FontWeight="Bold"
+                                   FontSize="13"
+                                   Foreground="{DynamicResource ForegroundColor}"
+                                   TextAlignment="Center" />
+                        <TextBlock Text="{Binding Overlay.Message}"
+                                   FontSize="11"
                                    Foreground="{DynamicResource ForegroundColor}"
                                    TextAlignment="Center"
                                    TextWrapping="Wrap" />

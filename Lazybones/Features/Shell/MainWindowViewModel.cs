@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Lazybones.Core.Mvvm;
 using Lazybones.Core.State;
@@ -56,6 +58,12 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
     private bool _autoPaused;
     private DateTime _autoPauseStartedAt;
     private readonly IUserPresenceMonitor _presence = UserPresenceMonitor.Create();
+
+    // Decorative clock-face background. _clockFaceImage is the loaded bitmap (or
+    // null); _loadedClockFacePath tracks which path it came from so a slider
+    // change doesn't pointlessly reload from disk.
+    private Bitmap? _clockFaceImage;
+    private string? _loadedClockFacePath;
 
     public MainWindowViewModel() : this(new HistoryStore()) { }
 
@@ -158,6 +166,10 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         _presence.Locked += OnScreenLocked;
         _presence.Unlocked += OnScreenUnlocked;
         AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+
+        // Load the saved clock-face background, if any. A missing/unreadable
+        // file surfaces a toast (once, at startup) and is otherwise ignored.
+        LoadClockFaceImage(showToastOnError: true);
 
         // Apply any day rollover that should have fired while the app was
         // closed. First-run anchors silently (no toast).
@@ -470,6 +482,67 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
     // changes, since the leaf objects don't raise INPC.
     public MainWindowStrings Strings { get; private set; } = new();
 
+    // -- Clock-face background ---------------------------------------------
+    public Bitmap? ClockFaceImage => _clockFaceImage;
+    public bool HasClockFaceImage => _clockFaceImage != null;
+    public double ClockFaceImageScale => _state.ClockFaceImageScale;
+    public double ClockFaceImageAlpha => _state.ClockFaceImageAlpha;
+
+    // Pan offset, in disk pixels, for an image scaled past the face. The scale
+    // is applied about the center, so panning is just a translation: the image
+    // overflows the face by (scale-1) * diameter total, split each side, and the
+    // 0..1 slider walks across that range — offset 0 reveals the left/top edge,
+    // 1 the right/bottom, 0.5 stays centered. Zero overflow at scale <= 1.
+    private const double DiskDiameter = 260;
+    public double ClockFaceImageTranslateX =>
+        (0.5 - _state.ClockFaceImageOffsetX) * (_state.ClockFaceImageScale - 1) * DiskDiameter;
+    public double ClockFaceImageTranslateY =>
+        (0.5 - _state.ClockFaceImageOffsetY) * (_state.ClockFaceImageScale - 1) * DiskDiameter;
+
+    private void LoadClockFaceImage(bool showToastOnError)
+    {
+        _loadedClockFacePath = _state.ClockFaceImagePath;
+
+        var previous = _clockFaceImage;
+        _clockFaceImage = null;
+
+        var path = _state.ClockFaceImagePath;
+        if (!string.IsNullOrEmpty(path))
+        {
+            try
+            {
+                if (!File.Exists(path)) throw new FileNotFoundException(path);
+                _clockFaceImage = new Bitmap(path);
+            }
+            catch (Exception)
+            {
+                // Bad path, unreadable file, or not a decodable image — drop it
+                // and let the user know, but never block startup over decoration.
+                _clockFaceImage = null;
+                if (showToastOnError)
+                    _overlay.ShowNotice(_loc.Get("Toast_ImageLoadFailedTitle"),
+                                        _loc.Get("Toast_ImageLoadFailed"));
+            }
+        }
+
+        previous?.Dispose();
+        OnPropertyChanged(nameof(ClockFaceImage));
+        OnPropertyChanged(nameof(HasClockFaceImage));
+    }
+
+    // Called from the dashboard when the clock-face settings change. Reloads the
+    // bitmap only when the path actually changed (slider drags don't touch it),
+    // and always re-raises scale/alpha so the disk updates live.
+    public void ReloadClockFace()
+    {
+        if (_state.ClockFaceImagePath != _loadedClockFacePath)
+            LoadClockFaceImage(showToastOnError: true);
+        OnPropertyChanged(nameof(ClockFaceImageScale));
+        OnPropertyChanged(nameof(ClockFaceImageAlpha));
+        OnPropertyChanged(nameof(ClockFaceImageTranslateX));
+        OnPropertyChanged(nameof(ClockFaceImageTranslateY));
+    }
+
     public OverlayViewModel Overlay => _overlay;
 
     public string Hours
@@ -711,6 +784,8 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         _loc.CultureChanged -= OnCultureChanged;
         AppDomain.CurrentDomain.ProcessExit -= OnProcessExit;
 
+        _clockFaceImage?.Dispose();
+
         _state.Left = (int)WindowPosition.X;
         _state.Top = (int)WindowPosition.Y;
 
@@ -782,7 +857,8 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         }
 
         var vm = new DashboardViewModel(_state, _history, RefreshOuterRing,
-            onAlwaysOnTopChanged: () => OnPropertyChanged(nameof(AlwaysOnTop)))
+            onAlwaysOnTopChanged: () => OnPropertyChanged(nameof(AlwaysOnTop)),
+            onClockFaceChanged: ReloadClockFace)
         {
             SelectedTabIndex = initialTabIndex
         };
