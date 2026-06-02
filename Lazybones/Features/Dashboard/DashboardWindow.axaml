@@ -293,86 +293,108 @@
                     </TabItem>
 
                     <!-- ========================== SETTINGS ========================== -->
+                    <!-- The settings list runs past the card height, so it scrolls;
+                         ToolTip.Tip on each group explains the setting in plain
+                         language for users who don't already know the jargon. -->
                     <TabItem Header="{Binding Strings.TabSettings}">
-                        <StackPanel Spacing="16" Margin="18,14,18,18">
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                      VerticalScrollBarVisibility="Auto">
+                            <StackPanel Spacing="16" Margin="18,14,18,18">
 
-                            <!-- Pinned to top so the auto-opened-on-first-launch
-                                 view surfaces it immediately; otherwise it gets
-                                 lost among the other settings. -->
-                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                <CheckBox Content="{Binding Strings.SettingsOpenAtLogin}"
-                                          IsChecked="{Binding StartWithWindows}"
-                                          VerticalAlignment="Center" />
-                                <Border Classes="pill">
-                                    <TextBlock Text="{Binding Strings.SettingsRecommended}" />
-                                </Border>
+                                <!-- Pinned to top so the auto-opened-on-first-launch
+                                     view surfaces it immediately; otherwise it gets
+                                     lost among the other settings. -->
+                                <StackPanel Orientation="Horizontal" Spacing="10"
+                                            ToolTip.Tip="{Binding Strings.SettingsOpenAtLoginTip}">
+                                    <CheckBox Content="{Binding Strings.SettingsOpenAtLogin}"
+                                              IsChecked="{Binding StartWithWindows}"
+                                              VerticalAlignment="Center" />
+                                    <Border Classes="pill">
+                                        <TextBlock Text="{Binding Strings.SettingsRecommended}" />
+                                    </Border>
+                                </StackPanel>
+
+                                <StackPanel Spacing="4"
+                                            ToolTip.Tip="{Binding Strings.SettingsLanguageTip}">
+                                    <TextBlock Classes="label" Text="{Binding Strings.SettingsLanguage}" />
+                                    <ComboBox ItemsSource="{Binding LanguageOptions}"
+                                              SelectedIndex="{Binding LanguageIndex}"
+                                              HorizontalAlignment="Left"
+                                              MinWidth="200" />
+                                </StackPanel>
+
+                                <StackPanel Spacing="4"
+                                            ToolTip.Tip="{Binding Strings.SettingsStandingMinutesTip}">
+                                    <TextBlock Classes="label" Text="{Binding Strings.SettingsStandingMinutes}" />
+                                    <NumericUpDown Value="{Binding StandingTime}"
+                                                   Minimum="1" Maximum="180" Increment="5"
+                                                   FormatString="0"
+                                                   HorizontalAlignment="Stretch" />
+                                </StackPanel>
+
+                                <StackPanel Spacing="4"
+                                            ToolTip.Tip="{Binding Strings.SettingsSittingMinutesTip}">
+                                    <TextBlock Classes="label" Text="{Binding Strings.SettingsSittingMinutes}" />
+                                    <NumericUpDown Value="{Binding SittingTime}"
+                                                   Minimum="1" Maximum="240" Increment="10"
+                                                   FormatString="0"
+                                                   HorizontalAlignment="Stretch" />
+                                </StackPanel>
+
+                                <StackPanel Spacing="4"
+                                            ToolTip.Tip="{Binding Strings.SettingsDailyCyclesTip}">
+                                    <TextBlock Classes="label" Text="{Binding Strings.SettingsDailyCycles}" />
+                                    <NumericUpDown Value="{Binding DailyCycleGoal}"
+                                                   Minimum="1" Maximum="20" Increment="1"
+                                                   FormatString="0"
+                                                   HorizontalAlignment="Stretch" />
+                                </StackPanel>
+
+                                <StackPanel Spacing="4"
+                                            ToolTip.Tip="{Binding Strings.SettingsDayRolloverTip}">
+                                    <TextBlock Classes="label" Text="{Binding Strings.SettingsDayRollover}" />
+                                    <Button Classes="clockface"
+                                            HorizontalAlignment="Left">
+                                        <TextBlock Text="{Binding RolloverTimeText}" />
+                                        <Button.Flyout>
+                                            <Flyout Placement="Bottom" ShowMode="Standard">
+                                                <vm:ClockDial Hour="{Binding RolloverHour}"
+                                                              Minute="{Binding RolloverMinute}"
+                                                              Width="220" Height="220" />
+                                            </Flyout>
+                                        </Button.Flyout>
+                                    </Button>
+                                </StackPanel>
+
+                                <StackPanel Spacing="4"
+                                            ToolTip.Tip="{Binding Strings.SettingsStartEachDayTip}">
+                                    <TextBlock Classes="label" Text="{Binding Strings.SettingsStartEachDay}" />
+                                    <ComboBox SelectedIndex="{Binding StartDayModeIndex}"
+                                              HorizontalAlignment="Left"
+                                              MinWidth="160">
+                                        <ComboBoxItem Content="{Binding Strings.SettingsStartSeated}" />
+                                        <ComboBoxItem Content="{Binding Strings.SettingsStartStanding}" />
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <CheckBox Content="{Binding Strings.SettingsAlwaysOnTop}"
+                                          IsChecked="{Binding AlwaysOnTop}"
+                                          ToolTip.Tip="{Binding Strings.SettingsAlwaysOnTopTip}" />
+
+                                <CheckBox Content="{Binding Strings.SettingsStandingPausedWhenAway}"
+                                          IsChecked="{Binding StandingPausedWhenAway}"
+                                          ToolTip.Tip="{Binding Strings.SettingsStandingPausedWhenAwayTip}" />
+
+                                <CheckBox Content="{Binding Strings.SettingsSeatedPausedWhenAway}"
+                                          IsChecked="{Binding SeatedPausedWhenAway}"
+                                          ToolTip.Tip="{Binding Strings.SettingsSeatedPausedWhenAwayTip}" />
+
+                                <TextBlock Classes="muted"
+                                           Text="{Binding Strings.SettingsAutoSaveHint}"
+                                           Margin="0,4,0,0" />
+
                             </StackPanel>
-
-                            <StackPanel Spacing="4">
-                                <TextBlock Classes="label" Text="{Binding Strings.SettingsLanguage}" />
-                                <ComboBox ItemsSource="{Binding LanguageOptions}"
-                                          SelectedIndex="{Binding LanguageIndex}"
-                                          HorizontalAlignment="Left"
-                                          MinWidth="200" />
-                            </StackPanel>
-
-                            <StackPanel Spacing="4">
-                                <TextBlock Classes="label" Text="{Binding Strings.SettingsStandingMinutes}" />
-                                <NumericUpDown Value="{Binding StandingTime}"
-                                               Minimum="1" Maximum="180" Increment="5"
-                                               FormatString="0"
-                                               HorizontalAlignment="Stretch" />
-                            </StackPanel>
-
-                            <StackPanel Spacing="4">
-                                <TextBlock Classes="label" Text="{Binding Strings.SettingsSittingMinutes}" />
-                                <NumericUpDown Value="{Binding SittingTime}"
-                                               Minimum="1" Maximum="240" Increment="10"
-                                               FormatString="0"
-                                               HorizontalAlignment="Stretch" />
-                            </StackPanel>
-
-                            <StackPanel Spacing="4">
-                                <TextBlock Classes="label" Text="{Binding Strings.SettingsDailyCycles}" />
-                                <NumericUpDown Value="{Binding DailyCycleGoal}"
-                                               Minimum="1" Maximum="20" Increment="1"
-                                               FormatString="0"
-                                               HorizontalAlignment="Stretch" />
-                            </StackPanel>
-
-                            <StackPanel Spacing="4">
-                                <TextBlock Classes="label" Text="{Binding Strings.SettingsDayRollover}" />
-                                <Button Classes="clockface"
-                                        HorizontalAlignment="Left">
-                                    <TextBlock Text="{Binding RolloverTimeText}" />
-                                    <Button.Flyout>
-                                        <Flyout Placement="Bottom" ShowMode="Standard">
-                                            <vm:ClockDial Hour="{Binding RolloverHour}"
-                                                          Minute="{Binding RolloverMinute}"
-                                                          Width="220" Height="220" />
-                                        </Flyout>
-                                    </Button.Flyout>
-                                </Button>
-                            </StackPanel>
-
-                            <StackPanel Spacing="4">
-                                <TextBlock Classes="label" Text="{Binding Strings.SettingsStartEachDay}" />
-                                <ComboBox SelectedIndex="{Binding StartDayModeIndex}"
-                                          HorizontalAlignment="Left"
-                                          MinWidth="160">
-                                    <ComboBoxItem Content="{Binding Strings.SettingsStartSeated}" />
-                                    <ComboBoxItem Content="{Binding Strings.SettingsStartStanding}" />
-                                </ComboBox>
-                            </StackPanel>
-
-                            <CheckBox Content="{Binding Strings.SettingsAlwaysOnTop}"
-                                      IsChecked="{Binding AlwaysOnTop}" />
-
-                            <TextBlock Classes="muted"
-                                       Text="{Binding Strings.SettingsAutoSaveHint}"
-                                       Margin="0,4,0,0" />
-
-                        </StackPanel>
+                        </ScrollViewer>
                     </TabItem>
 
                     <!-- ========================== UPDATES =========================== -->

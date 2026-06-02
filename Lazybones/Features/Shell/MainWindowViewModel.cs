@@ -873,6 +873,13 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         if (_triggerInFlight) return;
         if (!IsRunning) return;
 
+        // Mode-conditional: only the current mode's "paused when away" setting
+        // decides. Standing pauses by default, seated doesn't — see AppState.
+        // When seated and not pausing, the timer keeps running while away, so
+        // the next stand prompt may fire during the absence (intended).
+        var pauseWhenAway = IsStanding ? _state.StandingPausedWhenAway : _state.SeatedPausedWhenAway;
+        if (!pauseWhenAway) return;
+
         _autoPauseStartedAt = DateTime.Now;
         _autoPaused = true;
         Pause(_loc.Get("Mode_Locked"), PauseReason.ScreenLock);

@@ -320,6 +320,33 @@ public class DashboardViewModel : ViewModelBase, IDisposable
         }
     }
 
+    // Mode-conditional auto-pause on screen lock / away. MainWindowViewModel
+    // reads these off the shared AppState at lock time, so changes take effect
+    // live without restarting the cycle.
+    public bool StandingPausedWhenAway
+    {
+        get => _state.StandingPausedWhenAway;
+        set
+        {
+            if (_state.StandingPausedWhenAway == value) return;
+            _state.StandingPausedWhenAway = value;
+            _state.SaveState();
+            OnPropertyChanged(nameof(StandingPausedWhenAway));
+        }
+    }
+
+    public bool SeatedPausedWhenAway
+    {
+        get => _state.SeatedPausedWhenAway;
+        set
+        {
+            if (_state.SeatedPausedWhenAway == value) return;
+            _state.SeatedPausedWhenAway = value;
+            _state.SaveState();
+            OnPropertyChanged(nameof(SeatedPausedWhenAway));
+        }
+    }
+
     private DateOnly Today => LogicalDay.From(DateTime.Now, _state.DayRolloverTime);
 
     public int TodayStandingMinutes => _history.StandingMinutesOn(Today, _state.DayRolloverTime);

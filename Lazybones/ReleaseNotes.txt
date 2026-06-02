@@ -1,3 +1,8 @@
+v.1.3.0
+   - New: "paused when away" can now be set per mode. Locking your screen or stepping away pauses the timer based on the mode you're in — standing pauses by default (time away isn't standing at your desk, so the cycle shouldn't complete while you're gone), while sitting keeps counting by default (time away from your chair is time not sitting, so it brings your next stand reminder closer). Both are in Settings.
+   - New: hover tooltips on every setting, explaining in plain language what each one does.
+   - The Settings tab now scrolls when its content runs past the window height.
+
 v.1.2.1
    - Fix: the localized interface was broken in the 1.2.0 release build — the dashboard tabs showed an internal code name instead of their labels, and changing the language didn't take effect until the window was reopened. The 1.2.0 language work routed labels through a reflection-based binding that the release build's trimming stripped out. Localized text now uses compiled bindings, which survive trimming, so tabs, labels, tooltips, dialogs, and live language switching all work again in packaged builds.
 

@@ -39,7 +39,21 @@ public sealed class DashboardStrings
     public string SettingsStartSeated => L.Get("Settings_StartSeated");
     public string SettingsStartStanding => L.Get("Settings_StartStanding");
     public string SettingsAlwaysOnTop => L.Get("Settings_AlwaysOnTop");
+    public string SettingsStandingPausedWhenAway => L.Get("Settings_StandingPausedWhenAway");
+    public string SettingsSeatedPausedWhenAway => L.Get("Settings_SeatedPausedWhenAway");
     public string SettingsAutoSaveHint => L.Get("Settings_AutoSaveHint");
+
+    // Setting tooltips — plain-language explanations shown on hover.
+    public string SettingsOpenAtLoginTip => L.Get("Settings_OpenAtLogin_Tip");
+    public string SettingsLanguageTip => L.Get("Settings_Language_Tip");
+    public string SettingsStandingMinutesTip => L.Get("Settings_StandingMinutes_Tip");
+    public string SettingsSittingMinutesTip => L.Get("Settings_SittingMinutes_Tip");
+    public string SettingsDailyCyclesTip => L.Get("Settings_DailyCycles_Tip");
+    public string SettingsDayRolloverTip => L.Get("Settings_DayRollover_Tip");
+    public string SettingsStartEachDayTip => L.Get("Settings_StartEachDay_Tip");
+    public string SettingsAlwaysOnTopTip => L.Get("Settings_AlwaysOnTop_Tip");
+    public string SettingsStandingPausedWhenAwayTip => L.Get("Settings_StandingPausedWhenAway_Tip");
+    public string SettingsSeatedPausedWhenAwayTip => L.Get("Settings_SeatedPausedWhenAway_Tip");
 
     // Updates tab
     public string UpdatesRunningVersion => L.Get("Updates_RunningVersion");

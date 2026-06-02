@@ -77,6 +77,15 @@ public class AppState
     // Mode to use when the rollover fires. Default false = start day seated.
     public bool StartDayStanding { get; set; }
 
+    // Whether locking the screen / stepping away auto-pauses the running timer,
+    // split by mode. Standing pauses by default — time away isn't real
+    // desk-standing, so the standing cycle shouldn't complete (or over-credit)
+    // while you're gone. Seated does NOT pause by default — time away is time
+    // not sitting, so letting the timer run brings the next stand reminder
+    // closer instead of freezing your sitting countdown.
+    public bool StandingPausedWhenAway { get; set; } = true;
+    public bool SeatedPausedWhenAway { get; set; }
+
     // The most recent rollover boundary we've already applied. Used to decide
     // whether a rollover is due on startup / unlock / tick. Null means "no
     // rollover applied yet" — first run anchors it to the most recent past

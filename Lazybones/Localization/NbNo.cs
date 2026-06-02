@@ -41,7 +41,21 @@ internal static class NbNo
         ["Settings_StartSeated"] = "Sittende",
         ["Settings_StartStanding"] = "Stående",
         ["Settings_AlwaysOnTop"] = "Alltid øverst",
+        ["Settings_StandingPausedWhenAway"] = "Stående settes på pause når du er borte",
+        ["Settings_SeatedPausedWhenAway"] = "Sittende settes på pause når du er borte",
         ["Settings_AutoSaveHint"] = "Endringer lagres automatisk.",
+
+        // -- Settings tooltips (hover-forklaringer) ------------------------
+        ["Settings_OpenAtLogin_Tip"] = "Start Get Up, Lazybones! automatisk når du logger inn, slik at påminneren alltid kjører i bakgrunnen.",
+        ["Settings_Language_Tip"] = "Språk for appens grensesnitt. \"Følg systemspråk\" matcher systemet ditt; velg et bestemt språk for å overstyre det.",
+        ["Settings_StandingMinutes_Tip"] = "Hvor lenge hver ståøkt varer før du blir bedt om å sette deg igjen.",
+        ["Settings_SittingMinutes_Tip"] = "Hvor lenge du sitter før du blir bedt om å reise deg igjen.",
+        ["Settings_DailyCycles_Tip"] = "Hvor mange fullførte stå-sykluser som teller som å nå dagsmålet. Dette styrer rekketelleren og den ytre ringen på skiven.",
+        ["Settings_DayRollover_Tip"] = "Tidspunktet på dagen da dagsstatistikken nullstilles og en ny dag begynner. En sen syklus før dette tidspunktet teller fortsatt mot dagen du nettopp avsluttet, ikke den neste.",
+        ["Settings_StartEachDay_Tip"] = "Hvilken modus tidtakeren starter i når dagen ruller over — sittende eller stående.",
+        ["Settings_AlwaysOnTop_Tip"] = "Hold skiven flytende over andre vinduer slik at den er synlig mens du jobber.",
+        ["Settings_StandingPausedWhenAway_Tip"] = "Når du låser skjermen eller går fra mens du står, settes tidtakeren på pause og fortsetter der du slapp når du kommer tilbake. Av: stå-syklusen fortsetter å telle mens du er borte.",
+        ["Settings_SeatedPausedWhenAway_Tip"] = "Når du låser skjermen eller går fra mens du sitter, settes tidtakeren på pause. Av: tidtakeren fortsetter å gå, så tid borte fra pulten teller mot neste påminnelse om å reise deg.",
 
         // -- Updates tab ---------------------------------------------------
         ["Updates_RunningVersion"] = "Kjørende versjon",

@@ -40,7 +40,21 @@ internal static class EnUs
         ["Settings_StartSeated"] = "Seated",
         ["Settings_StartStanding"] = "Standing",
         ["Settings_AlwaysOnTop"] = "Always on top",
+        ["Settings_StandingPausedWhenAway"] = "Standing is paused when away",
+        ["Settings_SeatedPausedWhenAway"] = "Seated is paused when away",
         ["Settings_AutoSaveHint"] = "Changes save automatically.",
+
+        // -- Settings tooltips (hover explanations) ------------------------
+        ["Settings_OpenAtLogin_Tip"] = "Launch Get Up, Lazybones! automatically when you sign in, so the reminder is always running in the background.",
+        ["Settings_Language_Tip"] = "Language for the app's interface. \"Follow OS language\" matches your system; pick a specific language to override it.",
+        ["Settings_StandingMinutes_Tip"] = "How long each standing stretch lasts before you're prompted to sit back down.",
+        ["Settings_SittingMinutes_Tip"] = "How long you sit before you're prompted to stand up again.",
+        ["Settings_DailyCycles_Tip"] = "How many completed standing cycles count as hitting your goal for the day. This drives the streak counter and the outer ring on the disk.",
+        ["Settings_DayRollover_Tip"] = "The time of day your daily stats reset and a fresh day begins. A late-night cycle before this time still counts toward the day you just finished, not the next one.",
+        ["Settings_StartEachDay_Tip"] = "Which mode the timer starts in when the day rolls over — seated or standing.",
+        ["Settings_AlwaysOnTop_Tip"] = "Keep the disk floating above other windows so it stays visible while you work.",
+        ["Settings_StandingPausedWhenAway_Tip"] = "When you lock the screen or step away while standing, pause the timer and pick up where you left off on return. Off: the standing cycle keeps counting while you're gone.",
+        ["Settings_SeatedPausedWhenAway_Tip"] = "When you lock the screen or step away while seated, pause the timer. Off: the timer keeps running, so time away from your desk counts toward your next stand reminder.",
 
         // -- Updates tab ---------------------------------------------------
         ["Updates_RunningVersion"] = "Running version",
