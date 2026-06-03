@@ -1,3 +1,6 @@
+v.1.4.1
+   - Fix: if the day rolled over while the change-position prompt was open — e.g. a cycle finished while you were away and you returned after the new day began — the finished cycle was logged as a rollover reset and lost its credit, and the stale prompt stayed up. The completed cycle now counts toward your day and streak, and the prompt is dismissed automatically when the rollover fires.
+
 v.1.4.0
    - New: optional clock-face background image. Pick any image in Settings to show it centered on the disk, with sliders for scale (0–4×, where 1 fills the face) and opacity (0–1). When scaled past the face, two more sliders pan it horizontally and vertically to frame the part you want. Everything updates the disk live as you drag. If the chosen image later goes missing, the disk simply shows no background and a one-time notice appears at startup.
 

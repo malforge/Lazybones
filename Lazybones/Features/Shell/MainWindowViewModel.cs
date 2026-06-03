@@ -40,6 +40,11 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
     private readonly OverlayViewModel _overlay = new();
     private readonly DispatcherTimer _timer;
     private bool _triggerInFlight;
+    // The end-of-cycle change-position dialog while it's open, plus a flag set
+    // when a day rollover dismisses it out from under the user — so TriggerAsync's
+    // continuation knows the rollover already handled (and credited) the cycle.
+    private ModeSwitchDialog? _activeModeSwitchDialog;
+    private bool _rolloverInterruptedTrigger;
     private DateTime _cycleStartedAt;
     // Flips to true the first time the user confirms a time-adjust during the
     // current cycle. Reset at every cycle boundary. Copied onto the CycleRecord
@@ -221,11 +226,25 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
             return false;
         }
 
-        // Close out the in-progress cycle with a RolloverReset (NOT a manual
-        // Reset) so the streak and other "active interaction" checks ignore
-        // it — the user is never punished for the app's own day rollover,
-        // regardless of what state the cycle was in.
-        RecordCurrentCycle(CycleOutcome.RolloverReset);
+        // Close out the in-progress cycle. Normally a RolloverReset (NOT a manual
+        // Reset) so the streak and other "active interaction" checks ignore it —
+        // the user is never punished for the app's own day rollover.
+        //
+        // Exception: a cycle whose timer already hit zero is sitting behind an
+        // open change-position dialog (the user stepped away before answering).
+        // That cycle genuinely completed, so credit it as CompletedNaturally,
+        // dismiss the now-stale dialog, and flag TriggerAsync to bail so it
+        // doesn't re-record or toggle on top of the reset below.
+        if (_triggerInFlight && _activeModeSwitchDialog != null)
+        {
+            RecordCurrentCycle(CycleOutcome.CompletedNaturally);
+            _rolloverInterruptedTrigger = true;
+            _activeModeSwitchDialog.Close();
+        }
+        else
+        {
+            RecordCurrentCycle(CycleOutcome.RolloverReset);
+        }
 
         var startStanding = _state.StartDayStanding;
         if (startStanding) StandUp(); else SitDown();
@@ -736,8 +755,15 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
             if (mainWindow != null)
             {
+                _activeModeSwitchDialog = dialog;
                 await dialog.ShowDialog(mainWindow);
             }
+
+            // A day rollover that fired while the dialog was open already
+            // credited this cycle and reset the day; don't double-record or
+            // toggle on top of it.
+            if (_rolloverInterruptedTrigger)
+                return;
 
             var promptDismissed = dialog.UserChoice != ModeSwitchDialog.Choice.StartNow
                                   && dialog.UserChoice != ModeSwitchDialog.Choice.Dismiss;
@@ -766,6 +792,8 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         finally
         {
             _triggerInFlight = false;
+            _activeModeSwitchDialog = null;
+            _rolloverInterruptedTrigger = false;
         }
     }
 
