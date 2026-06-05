@@ -249,6 +249,14 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         var startStanding = _state.StartDayStanding;
         if (startStanding) StandUp(); else SitDown();
 
+        // A rollover that interrupted an open change-position prompt must leave
+        // the new day's cycle RUNNING. The prompt being up only means a cycle
+        // completed — the timer was auto-paused by TriggerAsync, not by the
+        // user — so we read it as "continue", matching a rollover that fires
+        // mid-run (which keeps running across the boundary). Resume() no-ops if
+        // already running, so the normal rollover path is unaffected.
+        if (_rolloverInterruptedTrigger) Resume();
+
         var actionText = startStanding
             ? _loc.Pick("StandUp")
             : _loc.Pick("SitDown");

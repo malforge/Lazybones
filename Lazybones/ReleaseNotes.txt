@@ -1,3 +1,6 @@
+v.1.4.2
+   - Fix: regression from 1.4.1 — when the day rolled over while the change-position prompt was open, the new day's timer started paused instead of running. A rollover now keeps the timer running across the boundary, the same as a rollover that fires during an active cycle.
+
 v.1.4.1
    - Fix: if the day rolled over while the change-position prompt was open — e.g. a cycle finished while you were away and you returned after the new day began — the finished cycle was logged as a rollover reset and lost its credit, and the stale prompt stayed up. The completed cycle now counts toward your day and streak, and the prompt is dismissed automatically when the rollover fires.
 
