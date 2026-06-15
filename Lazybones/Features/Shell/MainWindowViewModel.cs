@@ -9,6 +9,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using Lazybones.Core.Diagnostics;
 using Lazybones.Core.Mvvm;
 using Lazybones.Core.State;
 using Lazybones.Features.Achievements;
@@ -76,6 +77,17 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
     {
         _history = history;
         _state = AppState.LoadState();
+
+        // Snapshot the freshly-loaded state at every launch. Together with the
+        // rollover and exit lines below, this is what lets us tell a genuine
+        // continuous session from a stealth restart that reloaded stale state —
+        // the open question behind the unexplained evening RolloverReset.
+        DiagnosticLog.Write(
+            $"app start: IsRunning={_state.IsRunning} IsStanding={_state.IsStanding} " +
+            $"lastRollover={Fmt(_state.LastRolloverAppliedAt)} " +
+            $"cycleStartedAt={Fmt(_state.CycleStartedAt)} " +
+            $"appLastAliveAt={Fmt(_state.AppLastAliveAt)} " +
+            $"pauseStartedAt={Fmt(_state.CurrentPauseStartedAt)} pauseReason={_state.CurrentPauseReason?.ToString() ?? "null"}");
 
         PlayPauseCommand = new RelayCommand(PlayPause);
         ResetCommand = new RelayCommand(ConfirmReset);
@@ -178,7 +190,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
         // Apply any day rollover that should have fired while the app was
         // closed. First-run anchors silently (no toast).
-        ApplyDayRolloverIfDue(silent: !_state.LastRolloverAppliedAt.HasValue);
+        ApplyDayRolloverIfDue(silent: !_state.LastRolloverAppliedAt.HasValue, source: "startup");
 
         if (!_state.HasShownInitialSettings)
         {
@@ -212,11 +224,26 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
     // toast. When `silent` is true (first run), just anchors the timestamp.
     // Returns true when a visible rollover was applied (caller can suppress
     // any competing toast).
-    private bool ApplyDayRolloverIfDue(bool silent = false)
+    // Formats a nullable timestamp for the diagnostic log.
+    private static string Fmt(DateTime? value) =>
+        value?.ToString("yyyy-MM-dd HH:mm:ss") ?? "null";
+
+    private bool ApplyDayRolloverIfDue(bool silent = false, string source = "tick")
     {
-        var boundary = MostRecentRolloverBoundary(DateTime.Now);
+        var now = DateTime.Now;
+        var boundary = MostRecentRolloverBoundary(now);
         var last = _state.LastRolloverAppliedAt;
         if (last.HasValue && last.Value >= boundary) return false;
+
+        // A rollover is about to fire. Log the full input set BEFORE we mutate
+        // anything — this is the line that should finally explain the impossible
+        // evening RolloverReset (was `last` stale? did `source` say "startup",
+        // meaning a restart we didn't know about?).
+        DiagnosticLog.Write(
+            $"rollover[{source}] DUE now={now:HH:mm:ss.fff} boundary={boundary:yyyy-MM-dd HH:mm} " +
+            $"last={Fmt(last)} silent={silent} triggerInFlight={_triggerInFlight} " +
+            $"dialogOpen={_activeModeSwitchDialog != null} autoPaused={_autoPaused} " +
+            $"isRunning={IsRunning} isStanding={IsStanding}");
 
         _state.LastRolloverAppliedAt = boundary;
 
@@ -249,13 +276,28 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         var startStanding = _state.StartDayStanding;
         if (startStanding) StandUp(); else SitDown();
 
-        // A rollover that interrupted an open change-position prompt must leave
-        // the new day's cycle RUNNING. The prompt being up only means a cycle
-        // completed — the timer was auto-paused by TriggerAsync, not by the
-        // user — so we read it as "continue", matching a rollover that fires
-        // mid-run (which keeps running across the boundary). Resume() no-ops if
-        // already running, so the normal rollover path is unaffected.
-        if (_rolloverInterruptedTrigger) Resume();
+        // A new day starts a fresh, RUNNING cycle — matching a rollover that
+        // fires mid-run (which carries the running state across the boundary).
+        // The old `_rolloverInterruptedTrigger`-only resume missed every case
+        // where the timer was paused for a reason other than an open prompt —
+        // most importantly a fresh launch into a due rollover with IsRunning
+        // restored as false (app closed last night while screen-lock-paused),
+        // where nothing else ever resumes it (the unlock-resume safety net is
+        // per-process and gone after a restart). That's the "timer won't start
+        // the morning after" bug.
+        //
+        // The one case we must NOT resume is an active away auto-pause: the user
+        // is still at a locked screen, so leave it paused and let
+        // OnScreenUnlocked resume on their return — otherwise we'd run e.g. a
+        // standing timer at an empty desk. At startup _autoPaused is false, so a
+        // launch-time rollover correctly starts running; Resume() no-ops when
+        // already running, so the mid-run path is unaffected.
+        var resumed = !_autoPaused;
+        if (resumed) Resume();
+
+        DiagnosticLog.Write(
+            $"rollover[{source}] applied -> mode={(startStanding ? "standing" : "seated")} " +
+            $"resumed={resumed} interruptedTrigger={_rolloverInterruptedTrigger} isRunning={IsRunning}");
 
         var actionText = startStanding
             ? _loc.Pick("StandUp")
@@ -812,6 +854,8 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         if (_disposed) return;
         _disposed = true;
 
+        DiagnosticLog.Write($"app exit (Dispose): IsRunning={IsRunning} lastRollover={Fmt(_state.LastRolloverAppliedAt)}");
+
         _timer.Stop();
         _presence.Locked -= OnScreenLocked;
         _presence.Unlocked -= OnScreenUnlocked;
@@ -845,6 +889,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
     private void OnProcessExit(object? sender, EventArgs e)
     {
         if (_disposed) return;
+        DiagnosticLog.Write($"app exit (ProcessExit): IsRunning={IsRunning} lastRollover={Fmt(_state.LastRolloverAppliedAt)}");
         if (_state.CycleStartedAt.HasValue && !_state.CurrentPauseStartedAt.HasValue)
         {
             _state.CurrentPauseStartedAt = DateTime.Now;
@@ -957,7 +1002,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
         // Day rollover is checked on every tick (cheap; usually a no-op) so
         // it fires while the app is open, not only on startup/unlock.
-        ApplyDayRolloverIfDue();
+        ApplyDayRolloverIfDue(source: "tick");
 
         // Heartbeat: persist state at most every 5 s. On a crash/kill/forced
         // exit the recovery logic uses AppLastAliveAt to synthesize a pause
@@ -1011,7 +1056,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
         // If the lock window straddled a rollover, the rollover toast wins —
         // it carries the more important "fresh day, mode reset" message.
-        if (ApplyDayRolloverIfDue()) return;
+        if (ApplyDayRolloverIfDue(source: "unlock")) return;
 
         _overlay.ShowIdleResumed(awayFor);
     }
