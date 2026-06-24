@@ -63,6 +63,13 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
     private DateOnly _currentDay;
     private bool _autoPaused;
     private DateTime _autoPauseStartedAt;
+    // True whenever the session is locked, tracked independently of _autoPaused.
+    // _autoPaused only goes true when the *current* mode pauses-when-away, so it
+    // can't answer "is the user present?" on its own (seated mode with
+    // pause-when-away off leaves it false at a locked screen). The day rollover
+    // needs the real presence signal to decide whether to start the new cycle
+    // running or wait for the user to come back.
+    private bool _screenLocked;
     private readonly IUserPresenceMonitor _presence = UserPresenceMonitor.Create();
 
     // Decorative clock-face background. _clockFaceImage is the loaded bitmap (or
@@ -243,7 +250,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
             $"rollover[{source}] DUE now={now:HH:mm:ss.fff} boundary={boundary:yyyy-MM-dd HH:mm} " +
             $"last={Fmt(last)} silent={silent} triggerInFlight={_triggerInFlight} " +
             $"dialogOpen={_activeModeSwitchDialog != null} autoPaused={_autoPaused} " +
-            $"isRunning={IsRunning} isStanding={IsStanding}");
+            $"screenLocked={_screenLocked} isRunning={IsRunning} isStanding={IsStanding}");
 
         _state.LastRolloverAppliedAt = boundary;
 
@@ -286,14 +293,31 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         // per-process and gone after a restart). That's the "timer won't start
         // the morning after" bug.
         //
-        // The one case we must NOT resume is an active away auto-pause: the user
-        // is still at a locked screen, so leave it paused and let
-        // OnScreenUnlocked resume on their return — otherwise we'd run e.g. a
-        // standing timer at an empty desk. At startup _autoPaused is false, so a
-        // launch-time rollover correctly starts running; Resume() no-ops when
-        // already running, so the mid-run path is unaffected.
-        var resumed = !_autoPaused;
-        if (resumed) Resume();
+        // The one case we must NOT resume is a locked screen: the user is away,
+        // so leave the cycle paused and let OnScreenUnlocked resume on their
+        // return — otherwise we'd run a timer at an empty desk. We key off the
+        // real lock state, not _autoPaused: seated mode with pause-when-away off
+        // leaves _autoPaused false even at a locked screen, and the old
+        // `!_autoPaused` check then resumed a seated cycle that counted down
+        // unattended from the rollover until the user actually arrived.
+        // At startup _screenLocked is false, so a launch-time rollover correctly
+        // starts running; Resume() no-ops when already running, so the mid-run
+        // path is unaffected.
+        var resumed = !_screenLocked;
+        if (resumed)
+        {
+            Resume();
+        }
+        else if (!_autoPaused)
+        {
+            // Locked, but the prior mode didn't auto-pause (so nothing is set up
+            // to resume on unlock). Adopt the away-pause state now — anchored at
+            // the rollover boundary — so OnScreenUnlocked resumes the fresh cycle
+            // when the user returns, exactly like the standing-mode path already
+            // does.
+            _autoPaused = true;
+            _autoPauseStartedAt = boundary;
+        }
 
         DiagnosticLog.Write(
             $"rollover[{source}] applied -> mode={(startStanding ? "standing" : "seated")} " +
@@ -1025,6 +1049,12 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
     private void OnScreenLocked(object? sender, EventArgs e)
     {
+        // Record presence first, unconditionally — the day rollover reads this
+        // to know the user is away. It must be set even when we skip the
+        // auto-pause below (a prompt is open, the timer is already stopped, or
+        // the current mode doesn't pause-when-away).
+        _screenLocked = true;
+
         // Only auto-pause if a cycle is actually running and we aren't already
         // in the middle of handling an end-of-cycle dialog.
         if (_triggerInFlight) return;
@@ -1044,6 +1074,8 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
     private void OnScreenUnlocked(object? sender, EventArgs e)
     {
+        _screenLocked = false;
+
         if (!_autoPaused) return;
         _autoPaused = false;
 
